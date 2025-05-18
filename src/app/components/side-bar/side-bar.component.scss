@@ -1,0 +1,57 @@
+.layout {
+  height: 100vh;
+
+  display: flex;
+}
+
+.sidebar {
+  width: 90px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin: 50px 10px;
+  padding: 10px 0;
+
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 50px;
+}
+
+.nav-item {
+  display: flex;
+  justify-content: center;
+
+  margin: 5px 0;
+  padding: 15px;
+
+  font-size: 20px;
+
+  border-radius: 15px;
+
+  color: white;
+
+  transition: background-color 0.5s ease;
+
+  cursor: pointer;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background-color: var(--secondaryAccentColor);
+  color: var(--secondaryOffColor);
+}
+
+.content {
+  flex: 1;
+
+  margin: 13px 13px 13px 0;
+  padding: 20px;
+
+  border-radius: 20px;
+
+  background: var(--offColor);
+}
