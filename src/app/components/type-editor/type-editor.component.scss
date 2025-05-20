@@ -1,0 +1,42 @@
+.editor-wrapper {
+  position: relative;
+
+  padding: 1.5rem;
+}
+
+.position-wrapper {
+  display: flex;
+  gap: 0.75rem;
+
+  position: absolute;
+  top: -51px;
+
+  .label {
+    margin: auto;
+  }
+}
+
+.back-button {
+  width: 48px;
+  height: 48px;
+
+  border-radius: 50%;
+  border: 2px solid var(--mainColor);
+
+  background: transparent;
+  color: var(--mainColor);
+
+  font-size: 1.2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background-color: var(--mainColor);
+    color: var(--offColor);
+  }
+}

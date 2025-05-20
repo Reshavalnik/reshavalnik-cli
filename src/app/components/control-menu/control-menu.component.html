@@ -1,0 +1,46 @@
+<div class="control-menu">
+  <!-- Top Course Cards -->
+  <div class="cards">
+    <div class="card" *ngFor="let course of courses" [ngStyle]="{ 'background-color': course.color }">
+      <div class="card-header">
+        <span
+          class="category"
+          [ngStyle]="{
+      'background-color': course.categoryColor,
+      'color': course.categoryColor === '#151313' ? 'white' : 'var(--mainColor)'
+    }"
+        >
+    {{ course.category }}
+  </span>
+      </div>
+      <div class="title">{{ course.title }}</div>
+      <div class="avatars">
+        <span class="dot" style="background-color: #ff5734;"></span>
+        <span class="dot" style="background-color: #be94f5;"></span>
+        <span class="dot" style="background-color: #fccc42;"></span>
+      </div>
+      <button class="continue" (click)="goToTypeEditor(course.componentName)">Продължи</button>
+    </div>
+  </div>
+
+  <!-- Lessons List -->
+  <div class="lessons-section">
+    <div class="lessons-header">
+      <h3>Съществуващи типове</h3>
+      <a href="#">Виж всички типове</a>
+    </div>
+    <div class="lesson" *ngFor="let lesson of lessons">
+      <div class="lesson-info">
+        <div class="title">{{ lesson.title }}</div>
+        <div class="subtitle">{{ lesson.subtitle }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggested Course -->
+  <div class="suggestion">
+    <span class="subtitle"></span>
+    <h4 class="suggestion-title">Менюто предстои да бъде създадено...</h4>
+    <button class="details-btn"></button>
+  </div>
+</div>
