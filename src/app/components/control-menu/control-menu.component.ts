@@ -21,14 +21,16 @@ export class ControlMenuComponent {
       categoryColor: '#151313',
       title: 'Създаване на тип математическа задача',
       progress: '5/20 lessons',
-      color: '#FEE684'
+      color: '#FEE684',
+      componentName: 'typeEditor'
     },
     {
       category: 'Едитор',
       categoryColor: '#fccc42',
       title: 'Генериране на математически задачи',
       progress: '12/50 lessons',
-      color: '#E9D2FC'
+      color: '#E9D2FC',
+      componentName: 'taskGenerator'
     },
     {
       category: 'Запазени',
@@ -70,7 +72,9 @@ export class ControlMenuComponent {
     }
   ];
 
-  goToTypeEditor() {
-    this.navigate.emit('typeEditor');
+  goToTypeEditor(componentName: string | undefined) {
+    if (componentName) {
+      this.navigate.emit(componentName);
+    }
   }
 }

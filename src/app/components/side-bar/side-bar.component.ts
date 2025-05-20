@@ -3,6 +3,7 @@ import {NgComponentOutlet, NgForOf, NgIf} from '@angular/common';
 import {TypeEditorComponent} from '../type-editor/type-editor.component';
 import {ControlMenuComponent} from '../control-menu/control-menu.component';
 import {Router} from '@angular/router';
+import {TaskGeneratorComponent} from '../task-generator/task-generator.component';
 
 @Component({
   selector: 'app-side-bar',
@@ -21,7 +22,8 @@ export class SideBarComponent implements AfterViewInit {
 
   componentsMap: Record<string, Type<any>> = {
     controlMenu: ControlMenuComponent,
-    typeEditor: TypeEditorComponent
+    typeEditor: TypeEditorComponent,
+    taskGenerator: TaskGeneratorComponent
   };
 
   activeContentKey: string = 'controlMenu';
