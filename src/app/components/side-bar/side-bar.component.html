@@ -1,8 +1,15 @@
-<!-- sidebar-layout.component.html -->
 <div class="layout">
   <aside class="sidebar" [class.collapsed]="isCollapsed" (mouseenter)="toggleCollapse(false)" (mouseleave)="toggleCollapse(true)">
-    <div class="nav-item" *ngFor="let icon of icons; let i = index" [class.active]="i === activeIndex" (click)="setActive(i)">
-      <i [class]="icon"></i>
+    <div class="nav-section-top">
+      <div class="nav-item" *ngFor="let icon of icons; let i = index" [class.active]="i === activeIndex" (click)="setActive(i)">
+        <i [class]="icon"></i>
+      </div>
+    </div>
+    <div class="nav-section-bottom">
+      <div class="nav-item">
+
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </div>
     </div>
   </aside>
   <main class="content">

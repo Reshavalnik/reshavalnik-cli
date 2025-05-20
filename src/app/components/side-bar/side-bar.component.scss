@@ -9,6 +9,7 @@
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 
   margin: 50px 10px;
@@ -39,10 +40,15 @@
   cursor: pointer;
 }
 
-.nav-item:hover,
-.nav-item.active {
+.nav-section-top > .nav-item:hover,
+.nav-section-top > .nav-item.active {
   background-color: var(--secondaryAccentColor);
   color: var(--secondaryOffColor);
+}
+
+.nav-section-bottom > .nav-item:hover,
+.nav-section-bottom > .nav-item.active {
+  color: lightslategrey;
 }
 
 .content {
