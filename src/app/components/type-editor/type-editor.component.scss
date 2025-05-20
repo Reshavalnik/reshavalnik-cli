@@ -1,5 +1,19 @@
 .editor-wrapper {
+  position: relative;
+
   padding: 1.5rem;
+}
+
+.position-wrapper {
+  display: flex;
+  gap: 0.75rem;
+
+  position: absolute;
+  top: -51px;
+
+  .label {
+    margin: auto;
+  }
 }
 
 .back-button {
