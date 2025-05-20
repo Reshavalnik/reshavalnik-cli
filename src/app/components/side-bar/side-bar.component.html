@@ -1,18 +1,36 @@
 <div class="layout">
-  <aside class="sidebar" [class.collapsed]="isCollapsed" (mouseenter)="toggleCollapse(false)" (mouseleave)="toggleCollapse(true)">
+  <aside class="sidebar" [class.collapsed]="isCollapsed" (mouseenter)="toggleCollapse(false)"
+         (mouseleave)="toggleCollapse(true)">
     <div class="nav-section-top">
-      <div class="nav-item" *ngFor="let icon of icons; let i = index" [class.active]="i === activeIndex" (click)="setActive(i)">
-        <i [class]="icon"></i>
+      <div
+        class="nav-item"
+        *ngFor="let icon of icons; let i = index"
+        [class.active]="i === activeIndex"
+        (click)="setActive(i)">
+        <i [class]="icon.class"></i>
+        <span class="label" *ngIf="!isCollapsed">{{ icon.label }}</span>
       </div>
     </div>
     <div class="nav-section-bottom">
       <div class="nav-item">
-
         <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <span class="label" *ngIf="!isCollapsed">{{ 'Изход' }}</span>
       </div>
     </div>
   </aside>
   <main class="content">
+    <div class="header-container">
+      <h2>Начало</h2>
+      <div class="profile">
+        <div class="avatar">
+          <i class="fa-regular fa-user"></i>
+        </div>
+        <div class="info">
+          <div class="name">Краси Марков</div>
+          <div class="handle">{{ 'kras.markov@yahoo.com' }}</div>
+        </div>
+      </div>
+    </div>
     <ng-content></ng-content>
   </main>
 </div>

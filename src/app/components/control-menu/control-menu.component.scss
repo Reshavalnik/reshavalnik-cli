@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 2rem;
   padding: 1.5rem;
+  color: var(--secondaryOffColor);
 
   .cards {
     display: flex;
@@ -16,19 +17,40 @@
       border-radius: 20px;
       position: relative;
       display: flex;
+      justify-content: space-between;
       flex-direction: column;
       gap: 0.8rem;
       min-width: 250px;
+      border: 1px solid var(--mainColor);
+      background-color: var(--secondaryAccentColor);
 
       .card-header {
         display: flex;
         justify-content: space-between;
         font-weight: bold;
+        color: var(--mainColor);
+
+        .category {
+          font-weight: 400;
+        }
+
+        .category {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 10px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          border: 1px solid var(--mainColor);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+          white-space: nowrap;
+          transition: all 0.2s ease;
+        }
       }
 
       .title {
         font-size: 1.2rem;
-        font-weight: bold;
+        font-weight: 600;
+        color: var(--mainColor);
       }
 
       .progress {
@@ -39,63 +61,89 @@
         .bar {
           flex: 1;
           height: 6px;
-          background-color: #ddd;
+          background-color: var(--offColor);
           border-radius: 4px;
           overflow: hidden;
 
           .fill {
             height: 100%;
-            background-color: black;
+            background-color: var(--mainColor);
           }
         }
 
         .text {
           font-size: 0.8rem;
+          color: var(--mainColor);
         }
       }
 
       .avatars {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
 
-        img {
+        .dot {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-        }
+          display: inline-block;
+          border: 2px solid var(--offColor);
+          position: relative;
 
-        .count {
-          font-weight: bold;
+          &:not(:first-child) {
+            margin-left: -12px;
+          }
         }
       }
 
       .continue {
         align-self: flex-end;
         padding: 0.5rem 1rem;
-        background-color: #ff5c40;
-        color: white;
+        background-color: var(--secondaryColor);
+        color: var(--offColor);
         border: none;
         border-radius: 10px;
         cursor: pointer;
+
+        &:hover {
+          background-color: #ff7759;
+        }
       }
     }
   }
 
   .lessons-section {
-    background: white;
+    height: 400px;
+    background: var(--offColor);
     border-radius: 20px;
     padding: 1rem;
+    border: 1px solid var(--mainColor);
+    color: var(--mainColor);
+    position: relative;
+
+    overflow: auto;
 
     .lessons-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
 
+      position: sticky;
+      top: -20px;
+
+      background: var(--offColor);
+
+      h3 {
+        font-weight: 600;
+      }
+
       a {
-        color: #ff5c40;
+        color: var(--secondaryColor);
         text-decoration: none;
         font-weight: bold;
+
+        &:hover {
+          color: #ff7759;
+        }
       }
     }
 
@@ -127,11 +175,16 @@
         white-space: nowrap;
       }
     }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .suggestion {
-    background: #2a2a2a;
-    color: white;
+    border: 1px solid var(--mainColor);
+    background: var(--mainColor);
+    color: var(--offColor);
     padding: 1rem;
     border-radius: 20px;
     display: flex;
@@ -144,8 +197,8 @@
     }
 
     .category-tag {
-      background: gold;
-      color: black;
+      background: var(--secondaryAccentColor);
+      color: var(--mainColor);
       font-weight: bold;
       padding: 0.2rem 0.6rem;
       border-radius: 8px;
@@ -170,8 +223,8 @@
 
       .count {
         font-weight: bold;
-        color: black;
-        background: #ffd966;
+        color: var(--mainColor);
+        background: var(--secondaryAccentColor);
         padding: 0 0.4rem;
         border-radius: 12px;
       }
@@ -179,19 +232,23 @@
 
     .details-btn {
       padding: 0.5rem 1rem;
-      background-color: #ff5c40;
-      color: white;
+      background-color: var(--secondaryColor);
+      color: var(--offColor);
       border: none;
       border-radius: 10px;
       cursor: pointer;
       align-self: flex-start;
+
+      &:hover {
+        background-color: #ff7759;
+      }
     }
   }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .control-menu {
+
     .cards {
       flex-direction: column;
     }

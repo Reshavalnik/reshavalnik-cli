@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-side-bar',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
+    NgIf
   ],
   templateUrl: './side-bar.component.html',
   styleUrl: './side-bar.component.scss'
@@ -17,12 +18,9 @@ export class SideBarComponent {
   activeIndex = 0;
 
   icons = [
-    'far fa-folder',
-    'far fa-pen-to-square',
-    'far fa-calendar',
-    'far fa-comments',
-    'far fa-circle-play',
-    'far fa-circle'
+    { class: 'fa-solid fa-house', label: 'Начало' },
+    { class: 'fa-solid fa-users', label: 'Потребители' },
+    { class: 'fa-solid fa-sliders', label: 'Настройки' }
   ];
 
   toggleCollapse(state: boolean) {

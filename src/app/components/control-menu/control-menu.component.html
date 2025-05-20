@@ -3,55 +3,44 @@
   <div class="cards">
     <div class="card" *ngFor="let course of courses" [ngStyle]="{ 'background-color': course.color }">
       <div class="card-header">
-        <span class="category">{{ course.category }}</span>
-        <span class="bookmark">🔖</span>
+        <span
+          class="category"
+          [ngStyle]="{
+      'background-color': course.categoryColor,
+      'color': course.categoryColor === '#151313' ? 'white' : 'var(--mainColor)'
+    }"
+        >
+    {{ course.category }}
+  </span>
       </div>
       <div class="title">{{ course.title }}</div>
-      <div class="progress">
-        <div class="bar">
-          <div
-            class="fill"
-            [style.width]="(getProgressRatio(course.progress) * 100) + '%'"
-          ></div>
-        </div>
-        <span class="text">{{ course.progress }}</span>
-      </div>
       <div class="avatars">
-        <img src="https://i.pravatar.cc/24?img=1" alt="avatar"/>
-        <img src="https://i.pravatar.cc/24?img=2" alt="avatar"/>
-        <img src="https://i.pravatar.cc/24?img=3" alt="avatar"/>
-        <span class="count">+{{ course.avatarCount }}</span>
+        <span class="dot" style="background-color: #ff5734;"></span>
+        <span class="dot" style="background-color: #be94f5;"></span>
+        <span class="dot" style="background-color: #fccc42;"></span>
       </div>
-      <button class="continue">Continue</button>
+      <button class="continue">Продължи</button>
     </div>
   </div>
 
   <!-- Lessons List -->
   <div class="lessons-section">
     <div class="lessons-header">
-      <h3>My next lessons</h3>
-      <a href="#">View all lessons</a>
+      <h3>Съществуващи типове</h3>
+      <a href="#">Виж всички типове</a>
     </div>
     <div class="lesson" *ngFor="let lesson of lessons">
       <div class="lesson-info">
         <div class="title">{{ lesson.title }}</div>
         <div class="subtitle">{{ lesson.subtitle }}</div>
       </div>
-      <div class="teacher">{{ lesson.teacher }}</div>
-      <div class="duration">{{ lesson.duration }}</div>
     </div>
   </div>
 
   <!-- Suggested Course -->
   <div class="suggestion">
-    <span class="subtitle">New course matching your interests</span>
-    <span class="category-tag">Computer Science</span>
-    <h4 class="suggestion-title">Microsoft Future Ready: Fundamentals of Big Data</h4>
-    <div class="avatars">
-      <img src="https://i.pravatar.cc/24?img=4" alt="avatar"/>
-      <img src="https://i.pravatar.cc/24?img=5" alt="avatar"/>
-      <span class="count">+100</span>
-    </div>
-    <button class="details-btn">More details</button>
+    <span class="subtitle"></span>
+    <h4 class="suggestion-title">Менюто предстои да бъде създадено...</h4>
+    <button class="details-btn"></button>
   </div>
 </div>
