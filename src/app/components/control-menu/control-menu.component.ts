@@ -67,9 +67,4 @@ export class ControlMenuComponent {
       subtitle: 'dsofjdsjlksdf.py'
     }
   ];
-
-  getProgressRatio(progress: string): number {
-    const [current, total] = progress.split('/').map(Number);
-    return total > 0 ? current / total : 0;
-  }
 }
