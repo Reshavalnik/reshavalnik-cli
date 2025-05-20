@@ -1,0 +1,209 @@
+.control-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+
+    .card {
+      flex: 1 1 300px;
+      padding: 1rem;
+      border-radius: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      min-width: 250px;
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+      }
+
+      .title {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .progress {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .bar {
+          flex: 1;
+          height: 6px;
+          background-color: #ddd;
+          border-radius: 4px;
+          overflow: hidden;
+
+          .fill {
+            height: 100%;
+            background-color: black;
+          }
+        }
+
+        .text {
+          font-size: 0.8rem;
+        }
+      }
+
+      .avatars {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        img {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+        }
+
+        .count {
+          font-weight: bold;
+        }
+      }
+
+      .continue {
+        align-self: flex-end;
+        padding: 0.5rem 1rem;
+        background-color: #ff5c40;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .lessons-section {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem;
+
+    .lessons-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      a {
+        color: #ff5c40;
+        text-decoration: none;
+        font-weight: bold;
+      }
+    }
+
+    .lesson {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #eee;
+      padding: 0.8rem 0;
+
+      .lesson-info {
+        flex: 2;
+
+        .title {
+          font-weight: bold;
+        }
+
+        .subtitle {
+          font-size: 0.85rem;
+          color: #666;
+        }
+      }
+
+      .teacher,
+      .duration {
+        flex: 1;
+        font-size: 0.9rem;
+        color: #333;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .suggestion {
+    background: #2a2a2a;
+    color: white;
+    padding: 1rem;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .category-tag {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .suggestion-title {
+      font-size: 1.1rem;
+    }
+
+    .avatars {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+      }
+
+      .count {
+        font-weight: bold;
+        color: black;
+        background: #ffd966;
+        padding: 0 0.4rem;
+        border-radius: 12px;
+      }
+    }
+
+    .details-btn {
+      padding: 0.5rem 1rem;
+      background-color: #ff5c40;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .control-menu {
+    .cards {
+      flex-direction: column;
+    }
+
+    .lessons-section .lesson {
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .teacher,
+      .duration {
+        align-self: flex-start;
+      }
+    }
+  }
+}
