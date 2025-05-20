@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {NgForOf, NgStyle} from '@angular/common';
 
 @Component({
@@ -12,6 +12,8 @@ import {NgForOf, NgStyle} from '@angular/common';
   styleUrl: './control-menu.component.scss'
 })
 export class ControlMenuComponent {
+
+  @Output() navigate = new EventEmitter<string>();
 
   courses = [
     {
@@ -67,4 +69,8 @@ export class ControlMenuComponent {
       subtitle: 'dsofjdsjlksdf.py'
     }
   ];
+
+  goToTypeEditor() {
+    this.navigate.emit('typeEditor');
+  }
 }

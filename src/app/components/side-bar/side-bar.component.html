@@ -20,7 +20,8 @@
   </aside>
   <main class="content">
     <div class="header-container">
-      <h2>Начало</h2>
+      <h2 *ngIf="activeContentKey == 'controlMenu'">Начало</h2>
+      <h2 *ngIf="activeContentKey != 'controlMenu'"></h2>
       <div class="profile">
         <div class="avatar">
           <i class="fa-regular fa-user"></i>
@@ -31,6 +32,6 @@
         </div>
       </div>
     </div>
-    <ng-content></ng-content>
+    <ng-container #dynamicContent></ng-container>
   </main>
 </div>
