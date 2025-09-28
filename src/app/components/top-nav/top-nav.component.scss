@@ -1,0 +1,4 @@
+.top-nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #ffffff; border-bottom: 1px solid #151313; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.top-nav__logo { font-weight: 700; color: #151313; text-decoration: none; }
+.top-nav__links { display: flex; gap: 1rem; list-style: none; margin: 0; padding: 0; }
+.top-nav__links a { color: #151313; text-decoration: none; }
