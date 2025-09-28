@@ -1,8 +1,21 @@
 <nav class="top-nav">
-  <div class="top-nav__brand">
-    <a routerLink="/" class="top-nav__logo">Reshavalnik</a>
+  <div class="nav-shell">
+    <ul class="links" role="menubar" aria-label="Primary">
+      <li role="none">
+        <a routerLink="/" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+           role="menuitem">Home</a>
+      </li>
+      <li role="none">
+        <a routerLink="/services" routerLinkActive="active" role="menuitem">Services</a>
+      </li>
+      <li role="none">
+        <a routerLink="/work" routerLinkActive="active" role="menuitem">Work</a>
+      </li>
+      <li role="none">
+        <a routerLink="/auth" routerLinkActive="active" role="menuitem">Login</a>
+      </li>
+
+      <span class="slider" aria-hidden="true"></span>
+    </ul>
   </div>
-  <ul class="top-nav__links">
-    <li><a routerLink="/auth">Auth</a></li>
-  </ul>
 </nav>
