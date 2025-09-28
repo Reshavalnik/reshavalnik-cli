@@ -25,6 +25,15 @@
 
 /* Left column */
 .form-wrap {
+  height: 100%;
+  display: flex;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 36px;
+  box-shadow: var(--shadow);
+}
+
+.container {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -36,6 +45,7 @@
   position: sticky;
   top: clamp(8px, 2vw, 20px);
   height: fit-content;
+  margin: auto;
 }
 
 .brand-chip {
@@ -216,13 +226,18 @@
 
 /* Right column: Mosaic */
 .mosaic {
-  border-radius: var(--radius-lg);
   overflow: hidden;
   display: grid;
   grid-template-columns: repeat(3, minmax(120px, 1fr));
   grid-auto-rows: 170px;
   gap: 10px;
   position: relative;
+  padding: 24px;
+  /* Add slight background and border so the section is visibly separate */
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 36px;
+  box-shadow: var(--shadow);
   /* Easily changeable background image for the entire mosaic */
   --mosaic-image: var(--mosaicImage, none);
   --bg-cols: 3;
