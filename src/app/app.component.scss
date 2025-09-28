@@ -1,0 +1,11 @@
+.frame {
+  border: 1px solid #151313;
+  border-radius: 12px;
+  background: #f7f7f5;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+:host {
+  display: block;
+}
