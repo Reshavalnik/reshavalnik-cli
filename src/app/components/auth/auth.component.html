@@ -1,8 +1,85 @@
-<section class="auth">
-  <h2>Authentication</h2>
-  <div class="auth__actions">
-    <button class="btn">Login</button>
-    <button class="btn btn--secondary">Sign Up</button>
-  </div>
-  <p class="hint">This is a placeholder for the login/signin forms.</p>
-</section>
+<div class="auth-page">
+  <!-- Left: signup form -->
+  <section class="form-wrap">
+    <h1 class="title">Sign up account</h1>
+    <p class="subtitle">Enter your personal data to create your account</p>
+
+    <div class="oauth">
+      <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Google">
+        <img src="data:image/svg+xml;utf8,
+          <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none'><path d='M21.6 12.23c0-.66-.06-1.29-.17-1.9H12v3.59h5.39c-.23 1.21-.93 2.23-1.98 2.92v2.42h3.2c1.87-1.72 2.99-4.25 2.99-7.03Z' fill='%234285F4'/><path d='M12 22c2.7 0 4.97-.9 6.63-2.43l-3.2-2.42c-.89.6-2.03.95-3.43.95-2.64 0-4.88-1.78-5.68-4.17H3.04v2.52C4.69 19.98 8.09 22 12 22Z' fill='%2334A853'/><path d='M6.32 13.93A5.99 5.99 0 0 1 6 12c0-.67.12-1.33.32-1.93V7.55H3.04A9.99 9.99 0 0 0 2 12c0 1.6.38 3.12 1.04 4.45l3.28-2.52Z' fill='%23FBBC05'/><path d='M12 6.4c1.47 0 2.78.5 3.81 1.49l2.86-2.86A9.03 9.03 0 0 0 12 2C8.09 2 4.69 4.02 3.04 7.55l3.28 2.52C7.12 7.68 9.36 6.4 12 6.4Z' fill='%23EA4335'/></svg>"
+             alt="">
+        Google
+      </button>
+
+      <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with GitHub">
+        <img src="data:image/svg+xml;utf8,
+          <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='currentColor'><path d='M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.38 7.86 10.9.58.1.79-.26.79-.57l-.02-2.02c-3.2.7-3.88-1.38-3.88-1.38-.53-1.33-1.3-1.68-1.3-1.68-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.11-.75.41-1.26.74-1.55-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.2-3.09-.12-.29-.52-1.47.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 5.82 0c2.22-1.49 3.2-1.18 3.2-1.18.63 1.58.23 2.76.11 3.05.75.8 1.2 1.83 1.2 3.09 0 4.43-2.7 5.41-5.27 5.69.43.37.81 1.1.81 2.22l-.01 3.29c0 .32.21.68.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z'/></svg>"
+             alt="">
+        GitHub
+      </button>
+    </div>
+
+    <div class="divider"><span>or</span></div>
+
+    <form class="form">
+      <label>
+        <span>Username</span>
+        <input type="text" placeholder="Username" autocomplete="username">
+      </label>
+
+      <label>
+        <span>Email address</span>
+        <input type="email" placeholder="you@example.com" autocomplete="email">
+      </label>
+
+      <label class="password">
+        <span>Password</span>
+        <input type="password" placeholder="Enter your password" autocomplete="new-password">
+        <button class="peek" type="button" aria-label="Show password">👁️</button>
+      </label>
+
+      <button class="btn btn-primary btn-wide" type="submit">
+        Sign up <span class="arrow">→</span>
+      </button>
+    </form>
+
+    <p class="footnote">
+      Already have an account?
+      <a href="#" class="link">Log in</a>
+    </p>
+  </section>
+
+  <!-- Right: mosaic / promo -->
+  <section class="mosaic" aria-hidden="true" style="--mosaicImage: url('https://images.unsplash.com/photo-1758132123976-6730692335f7?q=80&w=1829&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+    <!-- Row of tiles (mix of image-like and cards). Set --x and --y to slice the image. -->
+    <div class="tile img" style="--x:0;--y:0"></div>
+    <div class="tile img tall" style="--x:1;--y:0"></div>
+    <div class="tile img" style="--x:2;--y:0"></div>
+
+    <div class="tile img" style="--x:0;--y:1"></div>
+    <div class="tile panel">
+      <div class="chip-list">
+        <button class="chip">choose_template</button>
+        <button class="chip is-active">setup_scene</button>
+        <button class="chip">generate_3d_object</button>
+      </div>
+      <h3 class="panel-title">Fast Generation</h3>
+      <p class="panel-sub">Create unique 3D objects in seconds</p>
+    </div>
+    <div class="tile img" style="--x:2;--y:1"></div>
+
+    <div class="tile neon">
+      <h3>Maximum<br>Customization</h3>
+      <p>Tailor every aspect of your 3D object to your specifications</p>
+      <div class="cta-icon" aria-hidden="true">●</div>
+    </div>
+    <div class="tile aqua"></div>
+    <div class="tile img" style="--x:2;--y:2"></div>
+
+    <div class="tile img wide" style="--x:0;--y:3"></div>
+    <div class="tile img" style="--x:2;--y:3"></div>
+    <div class="tile img" style="--x:1;--y:2"></div>
+    <div class="tile img" style="--x:0;--y:2"></div>
+  </section>
+</div>
