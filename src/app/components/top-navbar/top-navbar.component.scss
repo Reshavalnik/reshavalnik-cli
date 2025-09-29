@@ -1,0 +1,28 @@
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--secondaryColor);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  width: fit-content;
+  margin: 20px auto;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  transition: background 0.1s, border-radius 0.25s;
+}
+
+.nav-item:hover {
+  background: var(--secondaryAccentColor);
+  border-radius: 30px;
+}
+
+.active {
+  background: orange;
+  border-radius: 30px;
+}

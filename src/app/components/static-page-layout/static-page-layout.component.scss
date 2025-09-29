@@ -1,0 +1,25 @@
+.outer-container {
+  background-color: var(--secondaryOffColor);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+
+.inner-container {
+  background-color: var(--offColor);
+  border-radius: 12px;
+  padding: 10px;
+  width: 100%;
+  min-height: calc(100vh - 40px);
+  justify-content: center;
+  align-items: flex-start;
+}
+
+h1 {
+  display: flex;
+  justify-content: center;
+}

@@ -1,0 +1,26 @@
+<nav class="navbar">
+
+  <div *ngIf="navItems.length === 0">No nav items!</div>
+
+
+<!--  <a *ngFor="let item of navItems"-->
+<!--     (click)="routerService.navigate(item.route)"-->
+<!--     class="nav-item">-->
+<!--    {{ item.label }}-->
+<!--  </a>-->
+
+  <a *ngFor="let item of navItems"
+     [routerLink]="item.route"
+     [routerLinkActive]="item.active"
+     class="nav-item">
+    {{ item.label }}
+  </a>
+
+
+<!--  <a href="/home" class="nav-item active">Home</a>-->
+<!--  <a href="/login" class="nav-item">Login/Register</a>-->
+<!--  <a href="/contacts" class="nav-item">Contacts</a>-->
+<!--  <a href="/about-us" class="nav-item">About Us</a>-->
+<!--  <a href="/prices" class="nav-item">Prices</a>-->
+
+</nav>

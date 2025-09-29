@@ -1,0 +1,23 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { StaticPageLayoutComponent } from './static-page-layout.component';
+
+describe('StaticPageLayoutComponent', () => {
+  let component: StaticPageLayoutComponent;
+  let fixture: ComponentFixture<StaticPageLayoutComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [StaticPageLayoutComponent]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(StaticPageLayoutComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
