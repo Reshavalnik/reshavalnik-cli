@@ -14,25 +14,19 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  accessToken: string;
+  accessToken?: string;
   tokenType?: string;
   refreshToken?: string;
-  user?: {
-    id: string | number;
-    username: string;
-    email: string;
-    name?: string;
-    roles?: string[];
-    avatarUrl?: string;
-  };
+  user?: UserProfile;
 }
 
 export interface UserProfile {
   id: string | number;
   username: string;
   email: string;
-  name?: string;
-  roles?: string[];
+  firstName?: string;
+  lastName?: string;
+  roles?: string[] | string;
   avatarUrl?: string;
 }
 
@@ -54,15 +48,16 @@ export class AuthService {
   private baseUrl = getApiBaseUrl();
 
   login(payload: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/api/auth/login`, payload);
+    const body = { username: payload.usernameOrEmail, password: payload.password } as any;
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/signin`, body);
   }
 
   register(payload: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/api/auth/register`, payload);
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/signup`, payload);
   }
 
   me(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.baseUrl}/api/auth/me`);
+    return this.http.get<UserProfile>(`${this.baseUrl}/auth/me`);
   }
 
   // Social login helpers: backend should handle provider redirects and callback
@@ -70,7 +65,7 @@ export class AuthService {
     const cb = encodeURIComponent(
       redirectUri || this.getDefaultOAuthRedirectUri()
     );
-    return `${this.baseUrl}/api/auth/oauth2/authorize/${provider}?redirect_uri=${cb}`;
+    return `${this.baseUrl}/auth/oauth2/authorize/${provider}?redirect_uri=${cb}`;
   }
 
   getDefaultOAuthRedirectUri(): string {
