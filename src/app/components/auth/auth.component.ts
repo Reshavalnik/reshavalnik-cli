@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { TokenStorageService } from '../../services/token-storage.service';
+import { GoogleLoginButtonComponent } from '../google-login-button/google-login-button.component';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, GoogleLoginButtonComponent],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss']
 })

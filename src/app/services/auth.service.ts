@@ -68,6 +68,13 @@ export class AuthService {
     return `${this.baseUrl}/auth/oauth2/authorize/${provider}?redirect_uri=${cb}`;
   }
 
+  // Token-exchange flow: POST id_token/access_token to backend
+  socialLogin(provider: string, token: string) {
+    const redirectUri = this.getDefaultOAuthRedirectUri();
+    const url = `${this.baseUrl}/auth/oauth2/login/${provider}`;
+    return this.http.post(`${url}`, { token, redirectUri }, { observe: 'response' });
+  }
+
   getDefaultOAuthRedirectUri(): string {
     // Try window runtime config first
     const w = window as any;
