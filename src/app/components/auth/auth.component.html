@@ -1,19 +1,22 @@
 <div class="auth-page">
-  <!-- Left: signup form -->
+  <!-- Left: signup/login form -->
   <section class="form-wrap">
     <div class="container">
-      <h1 class="title">Sign up account</h1>
-      <p class="subtitle">Enter your personal data to create your account</p>
+      <div class="brand-chip">Reshavalnik</div>
+      <h1 class="title">{{ mode === 'register' ? 'Sign up account' : 'Welcome back' }}</h1>
+      <p class="subtitle">
+        {{ mode === 'register' ? 'Enter your personal data to create your account' : 'Log in with your account credentials' }}
+      </p>
 
       <div class="oauth">
-        <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Google">
+        <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Google" (click)="socialLogin('google')">
           <img src="data:image/svg+xml;utf8,
           <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none'><path d='M21.6 12.23c0-.66-.06-1.29-.17-1.9H12v3.59h5.39c-.23 1.21-.93 2.23-1.98 2.92v2.42h3.2c1.87-1.72 2.99-4.25 2.99-7.03Z' fill='%234285F4'/><path d='M12 22c2.7 0 4.97-.9 6.63-2.43l-3.2-2.42c-.89.6-2.03.95-3.43.95-2.64 0-4.88-1.78-5.68-4.17H3.04v2.52C4.69 19.98 8.09 22 12 22Z' fill='%2334A853'/><path d='M6.32 13.93A5.99 5.99 0 0 1 6 12c0-.67.12-1.33.32-1.93V7.55H3.04A9.99 9.99 0 0 0 2 12c0 1.6.38 3.12 1.04 4.45l3.28-2.52Z' fill='%23FBBC05'/><path d='M12 6.4c1.47 0 2.78.5 3.81 1.49l2.86-2.86A9.03 9.03 0 0 0 12 2C8.09 2 4.69 4.02 3.04 7.55l3.28 2.52C7.12 7.68 9.36 6.4 12 6.4Z' fill='%23EA4335'/></svg>"
                alt="">
           Google
         </button>
 
-        <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Facebook">
+        <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Facebook" (click)="socialLogin('facebook')">
           <img src="data:image/svg+xml;utf8,
           <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='dodgerblue'><path d='M22.675 0H1.325C.593 0 0 .593 0 1.325v21.35C0 23.407.593 24 1.325 24h11.495v-9.294H9.692V11.41h3.128V8.828c0-3.098 1.893-4.788 4.66-4.788 1.325 0 2.463.099 2.795.143v3.24h-1.918c-1.504 0-1.796.716-1.796 1.764v2.223h3.59l-.467 3.296h-3.123V24h6.127C23.407 24 24 23.407 24 22.675V1.325C24 .593 23.407 0 22.675 0z'/></svg>"
                alt="">
@@ -23,31 +26,59 @@
 
       <div class="divider"><span>or</span></div>
 
-      <form class="form">
+      <!-- Error message -->
+      <div *ngIf="error" class="error" role="alert">{{ error }}</div>
+
+      <!-- Register form -->
+      <form class="form" *ngIf="mode === 'register'" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <label>
           <span>Username</span>
-          <input type="text" placeholder="Username" autocomplete="username">
+          <input type="text" placeholder="Username" autocomplete="username" formControlName="username">
         </label>
 
         <label>
           <span>Email address</span>
-          <input type="email" placeholder="you@example.com" autocomplete="email">
+          <input type="email" placeholder="you@example.com" autocomplete="email" formControlName="email">
         </label>
 
         <label class="password">
           <span>Password</span>
-          <input type="password" placeholder="Enter your password" autocomplete="new-password">
-          <button class="peek" type="button" aria-label="Show password">👁️</button>
+          <input [type]="passwordVisible ? 'text' : 'password'" placeholder="Enter your password" autocomplete="new-password" formControlName="password">
+          <button class="peek" type="button" aria-label="Show password" (click)="peekPassword()">👁️</button>
         </label>
 
-        <button class="btn btn-primary btn-wide" type="submit">
-          Sign up <span class="arrow">→</span>
+        <button class="btn btn-primary btn-wide" type="submit" [disabled]="registerForm.invalid || loading">
+          {{ loading ? 'Signing up...' : 'Sign up' }} <span class="arrow">→</span>
+        </button>
+      </form>
+
+      <!-- Login form -->
+      <form class="form" *ngIf="mode === 'login'" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <label>
+          <span>Username or email</span>
+          <input type="text" placeholder="you@example.com" autocomplete="username" formControlName="usernameOrEmail">
+        </label>
+
+        <label class="password">
+          <span>Password</span>
+          <input [type]="passwordVisible ? 'text' : 'password'" placeholder="Enter your password" autocomplete="current-password" formControlName="password">
+          <button class="peek" type="button" aria-label="Show password" (click)="peekPassword()">👁️</button>
+        </label>
+
+        <button class="btn btn-primary btn-wide" type="submit" [disabled]="loginForm.invalid || loading">
+          {{ loading ? 'Logging in...' : 'Log in' }} <span class="arrow">→</span>
         </button>
       </form>
 
       <p class="footnote">
-        Already have an account?
-        <a href="#" class="link">Log in</a>
+        <ng-container *ngIf="mode === 'register'; else loginFootnote">
+          Already have an account?
+          <a href="#" class="link" (click)="$event.preventDefault(); toggleMode('login')">Log in</a>
+        </ng-container>
+        <ng-template #loginFootnote>
+          Don\'t have an account?
+          <a href="#" class="link" (click)="$event.preventDefault(); toggleMode('register')">Sign up</a>
+        </ng-template>
       </p>
     </div>
   </section>

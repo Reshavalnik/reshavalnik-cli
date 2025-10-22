@@ -11,8 +11,11 @@
       <li role="none">
         <a routerLink="/work" routerLinkActive="active" role="menuitem">Work</a>
       </li>
-      <li role="none">
+      <li role="none" *ngIf="!isAuth">
         <a routerLink="/auth" routerLinkActive="active" role="menuitem">Login</a>
+      </li>
+      <li role="none" *ngIf="isAuth">
+        <a href="#" role="menuitem" (click)="$event.preventDefault(); logout()">Logout</a>
       </li>
     </ul>
   </div>
