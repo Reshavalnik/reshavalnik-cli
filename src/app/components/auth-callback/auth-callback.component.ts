@@ -3,6 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenStorageService } from '../../services/token-storage.service';
 
+/**
+ * Minimal callback page used after social login completes.
+ *
+ * The backend should establish the session via HttpOnly cookie. If the server also
+ * appends a token in the query string, we store it as a convenience for APIs
+ * that still expect an Authorization header. Cookie-based auth is preferred.
+ */
 @Component({
   selector: 'app-auth-callback',
   standalone: true,

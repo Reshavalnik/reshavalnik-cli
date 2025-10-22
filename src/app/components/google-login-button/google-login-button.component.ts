@@ -9,6 +9,11 @@ declare global {
   interface Window { google?: any }
 }
 
+/**
+ * Renders the Google Identity Services sign-in button and handles the
+ * token-exchange flow. The component never stores or processes the Google
+ * id_token beyond sending it to the backend.
+ */
 @Component({
   selector: 'app-google-login-button',
   standalone: true,
@@ -30,10 +35,14 @@ export class GoogleLoginButtonComponent implements AfterViewInit {
   }
 
   private ensureGsiLoaded(): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      const started = Date.now();
       const attempt = () => {
         if (window.google?.accounts?.id) {
           resolve();
+        } else if (Date.now() - started > 5000) {
+          console.error('Google Identity Services SDK failed to load');
+          reject(new Error('Google Identity Services SDK failed to load'));
         } else {
           setTimeout(attempt, 50);
         }

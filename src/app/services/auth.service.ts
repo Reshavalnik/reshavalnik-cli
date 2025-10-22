@@ -42,6 +42,13 @@ function getApiBaseUrl(): string {
   return 'http://localhost:8080';
 }
 
+/**
+ * Authentication service.
+ *
+ * - Provides classic login/register endpoints.
+ * - Supports social token-exchange flow where the frontend sends a provider token (e.g., Google id_token)
+ *   and the backend performs verification and issues a session (JWT in HttpOnly cookie).
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
