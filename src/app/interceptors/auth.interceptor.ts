@@ -10,10 +10,10 @@ export const authInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<any>> => {
   const tokenStore = inject(TokenStorageService);
 
-  let authReq = req;
+  let authReq = req.clone({ withCredentials: true });
   const token = tokenStore.getToken();
   if (token) {
-    authReq = req.clone({
+    authReq = authReq.clone({
       setHeaders: { Authorization: `Bearer ${token}` }
     });
   }
