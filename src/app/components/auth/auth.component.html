@@ -80,22 +80,37 @@
   <section class="mosaic" aria-hidden="true" style="--mosaicImage: url('https://images.unsplash.com/photo-1760344594784-60ff14035eb0?auto=format&fit=crop&q=80&w=1932')">
     <img ngSrc="https://images.unsplash.com/photo-1760344594784-60ff14035eb0?auto=format&fit=crop&q=80&w=1932" alt="" fill>
     <article>
-      <div></div>
-      <div class="tall"></div>
-      <div></div>
+      <div class="tile img" style="--x:0;--y:0"></div>
+      <div class="tile img tall" style="--x:1;--y:0"></div>
+      <div class="tile img" style="--x:2;--y:0"></div>
 
-      <div></div>
-      <div class="panel"></div>
-      <div></div>
+      <div class="tile img" style="--x:0;--y:1"></div>
 
-      <div class="neon"></div>
-      <div class="aqua"></div>
-      <div></div>
+      <div class="tile panel">
+        <div class="chip-list">
+          <button class="chip">choose_template</button>
+          <button class="chip is-active">setup_scene</button>
+          <button class="chip">generate_3d_object</button>
+        </div>
+        <h3 class="panel-title">Fast Generation</h3>
+        <p class="panel-sub">Create unique 3D objects in seconds</p>
+      </div>
 
-      <div class="wide"></div>
-      <div></div>
-      <div></div>
-      <div></div>
+      <div class="tile img" style="--x:2;--y:1"></div>
+
+      <div class="tile neon">
+        <h3>Maximum<br>Customization</h3>
+        <p>Tailor every aspect of your 3D object to your specifications</p>
+        <div class="cta-icon" aria-hidden="true">●</div>
+      </div>
+
+      <div class="tile aqua"></div>
+      <div class="tile img" style="--x:2;--y:2"></div>
+
+      <div class="tile img wide" style="--x:0;--y:3"></div>
+      <div class="tile img" style="--x:2;--y:3"></div>
+      <div class="tile img" style="--x:1;--y:2"></div>
+      <div class="tile img" style="--x:0;--y:2"></div>
     </article>
   </section>
 </div>

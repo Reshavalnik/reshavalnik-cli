@@ -229,6 +229,8 @@
 }
 
 .mosaic img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -237,69 +239,29 @@
   border-radius: 50px;
 }
 
+/* Grid overlay */
 .mosaic article {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   padding: 24px;
-  background: white;
-  mix-blend-mode: lighten; /* ✨ main effect */
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
-}
-
-.mosaic article div {
-  background: black;
-  border-radius: 18px;
-}
-
-/* Shapes */
-.mosaic article .tall {
-  grid-row: span 2;
-}
-
-.mosaic article .wide {
-  grid-column: span 2;
-}
-
-/* Optional special color blocks (no blend mode) */
-.mosaic article .panel {
-  background: #111;
-  mix-blend-mode: normal;
-}
-
-.mosaic article .neon {
-  background: #f3ff53;
-  mix-blend-mode: normal;
-}
-
-.mosaic article .aqua {
-  background: #9bf6e2;
-  mix-blend-mode: normal;
+  background: white;
+  mix-blend-mode: lighten; /* ✨ effect */
 }
 
 /* Base tile */
 .tile {
+  background: black;
   border-radius: 18px;
-  overflow: hidden;
   position: relative;
-  background: #f0f0ed;
-  border: 1px solid var(--line);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, .03), inset 0 -1px 0 rgba(0, 0, 0, .03);
 }
 
-/* ✅ Restore image-slicing background */
-.tile.img {
-  background-image: var(--mosaic-image);
-  background-repeat: no-repeat;
-  background-size: calc(100% * var(--bg-cols)) calc(100% * var(--bg-rows));
-  background-position:
-    calc((var(--x, 0) / (var(--bg-cols) - 1)) * 100%)
-    calc((var(--y, 0) / (var(--bg-rows) - 1)) * 100%);
-  background-color: #f4f4f1;
-}
-
+/* Shapes */
 .tile.tall {
   grid-row: span 2;
 }
@@ -308,10 +270,11 @@
   grid-column: span 2;
 }
 
+/* ---- Special Tiles ---- */
+
 /* Panel */
 .panel {
   background: var(--ink);
-  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -353,7 +316,7 @@
   margin: 0;
 }
 
-/* Neon tile */
+/* Neon */
 .neon {
   background: #f3ff53;
   color: #0f0f0f;
