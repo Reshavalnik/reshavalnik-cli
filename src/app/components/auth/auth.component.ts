@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -10,7 +10,7 @@ import { GoogleLoginButtonComponent } from '../google-login-button/google-login-
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, GoogleLoginButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, GoogleLoginButtonComponent, NgOptimizedImage],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss']
 })

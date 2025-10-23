@@ -220,22 +220,63 @@
 
 /* ---- Mosaic ---- */
 .mosaic {
+  position: relative;
+  border-radius: 36px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: #fff;
+}
+
+.mosaic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  content: var(--mosaicImage);
+  display: block;
+  border-radius: 50px;
+}
+
+.mosaic article {
+  position: absolute;
+  inset: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
-  grid-auto-rows: minmax(120px, 18vh); /* flexible height, preserves look */
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   padding: 24px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 36px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  align-self: stretch;
+  background: white;
+  mix-blend-mode: lighten; /* ✨ main effect */
+  box-sizing: border-box;
+}
 
-  /* Restore slicing variables */
-  --mosaic-image: var(--mosaicImage, none);
-  --bg-cols: 3;
-  --bg-rows: 4;
+.mosaic article div {
+  background: black;
+  border-radius: 18px;
+}
+
+/* Shapes */
+.mosaic article .tall {
+  grid-row: span 2;
+}
+
+.mosaic article .wide {
+  grid-column: span 2;
+}
+
+/* Optional special color blocks (no blend mode) */
+.mosaic article .panel {
+  background: #111;
+  mix-blend-mode: normal;
+}
+
+.mosaic article .neon {
+  background: #f3ff53;
+  mix-blend-mode: normal;
+}
+
+.mosaic article .aqua {
+  background: #9bf6e2;
+  mix-blend-mode: normal;
 }
 
 /* Base tile */
