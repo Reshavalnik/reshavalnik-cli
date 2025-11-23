@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 const TOKEN_KEY = 'auth.token';
 const USER_KEY = 'auth.user';
+const SESSION_KEY = 'auth.session';
 
 @Injectable({ providedIn: 'root' })
 export class TokenStorageService {
@@ -31,12 +32,23 @@ export class TokenStorageService {
     localStorage.removeItem(USER_KEY);
   }
 
+  setSessionAuthenticated(authenticated: boolean) {
+    if (authenticated) localStorage.setItem(SESSION_KEY, '1');
+    else localStorage.removeItem(SESSION_KEY);
+  }
+
+  get hasSession(): boolean {
+    return localStorage.getItem(SESSION_KEY) === '1';
+  }
+
   clearAll() {
     this.clearToken();
     this.clearUser();
+    this.setSessionAuthenticated(false);
   }
 
   get isAuthenticated(): boolean {
-    return !!this.getToken();
+    // Consider authenticated if we have a bearer token, or a validated session flag, or a stored user profile
+    return !!this.getToken() || this.hasSession || !!this.getUser();
   }
 }
