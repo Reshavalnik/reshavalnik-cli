@@ -48,7 +48,7 @@ export class AuthCallbackComponent {
           // nothing mandatory here without DI
         });
       } catch {}
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl('/panel');
     } else {
       this.router.navigate(['/auth'], { queryParams: { error: 'missing_token' } });
     }

@@ -64,7 +64,7 @@ export class AuthComponent {
   handleAuthSuccess(token?: string, user?: any) {
     if (token) this.tokens.setToken(token);
     if (user) this.tokens.setUser(user);
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/panel');
   }
 
   handleError(err: any) {
