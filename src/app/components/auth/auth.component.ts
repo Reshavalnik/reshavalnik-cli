@@ -64,6 +64,26 @@ export class AuthComponent {
   handleAuthSuccess(token?: string, user?: any) {
     if (token) this.tokens.setToken(token);
     if (user) this.tokens.setUser(user);
+
+    // If no token returned, try to validate cookie session and fetch profile
+    if (!token) {
+      this.auth.me().subscribe({
+        next: u => {
+          if (u) {
+            this.tokens.setUser(u);
+            this.tokens.setSessionAuthenticated(true);
+            this.router.navigateByUrl('/panel');
+          } else {
+            this.router.navigateByUrl('/auth');
+          }
+        },
+        error: _ => {
+          this.router.navigateByUrl('/auth');
+        }
+      });
+      return;
+    }
+
     this.router.navigateByUrl('/panel');
   }
 

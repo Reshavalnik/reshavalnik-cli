@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenStorageService } from '../../services/token-storage.service';
+import { AuthService } from '../../services/auth.service';
 
 /**
  * Minimal callback page used after social login completes.
@@ -25,6 +26,7 @@ export class AuthCallbackComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private tokens = inject(TokenStorageService);
+  private auth = inject(AuthService);
 
   ngOnInit() {
     // Token may arrive as query param (?token=) or as URL hash (#access_token=)
@@ -40,17 +42,22 @@ export class AuthCallbackComponent {
     const token = qpToken || tokenFromHash;
     if (token) {
       this.tokens.setToken(token);
-      // Optionally, try to fetch user profile after social login
-      // Ignore errors and just redirect
-      try {
-        // Using dynamic import to avoid direct circular dep
-        import('../../services/auth.service').then(m => m.AuthService).then(() => {
-          // nothing mandatory here without DI
-        });
-      } catch {}
       this.router.navigateByUrl('/panel');
-    } else {
-      this.router.navigate(['/auth'], { queryParams: { error: 'missing_token' } });
+      return;
     }
+
+    // If no token provided, try to validate cookie session
+    this.auth.me().subscribe({
+      next: user => {
+        if (user) {
+          this.tokens.setUser(user);
+          this.tokens.setSessionAuthenticated(true);
+          this.router.navigateByUrl('/panel');
+        } else {
+          this.router.navigate(['/auth'], { queryParams: { error: 'missing_token' } });
+        }
+      },
+      error: _ => this.router.navigate(['/auth'], { queryParams: { error: 'missing_token' } })
+    });
   }
 }
