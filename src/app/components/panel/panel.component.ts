@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormsModule } from '@angular/forms';
 import { TaskService } from '../../services/task.service';
+import { TokenStorageService } from '../../services/token-storage.service';
 
 @Component({
   selector: 'app-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <div class="panel">
       <header class="panel__header">
@@ -200,8 +201,8 @@ import { TaskService } from '../../services/task.service';
       <section *ngIf="tab==='generate'" class="tab">
         <div class="tab__header">
           <div>
-            <h2 class="tab__title">Generate Tasks</h2>
-            <p class="tab__description">Quickly create tasks for a subject</p>
+            <h2 class="tab__title">Generate Exam From Task</h2>
+            <p class="tab__description">Provide a Task ID and count. Optionally list students (comma-separated).</p>
           </div>
         </div>
 
@@ -209,20 +210,11 @@ import { TaskService } from '../../services/task.service';
           <form [formGroup]="generateForm" (ngSubmit)="onGenerate()" class="form">
             <div class="form__row form__row--3">
               <label class="form__field">
-                <span class="form__label">Subject</span>
+                <span class="form__label">Task ID</span>
                 <input
-                  formControlName="subject"
+                  formControlName="taskId"
                   class="form__control"
-                  placeholder="Subject"
-                />
-              </label>
-
-              <label class="form__field">
-                <span class="form__label">Grade</span>
-                <input
-                  formControlName="grade"
-                  class="form__control"
-                  placeholder="Grade"
+                  placeholder="Task ID"
                 />
               </label>
 
@@ -231,16 +223,53 @@ import { TaskService } from '../../services/task.service';
                 <input
                   formControlName="count"
                   type="number"
+                  min="1"
                   class="form__control"
                   placeholder="Count"
                 />
               </label>
+
+              <label class="form__field">
+                <span class="form__label">Students (comma-separated)</span>
+                <input
+                  formControlName="students"
+                  class="form__control"
+                  placeholder="e.g. alice,bob,charlie"
+                />
+              </label>
             </div>
 
-            <div class="form__actions">
+            <div class="form__actions" style="display:flex;gap:.5rem;flex-wrap:wrap;">
               <button type="submit" class="btn btn--primary">
                 Generate
               </button>
+              <button type="button" class="btn btn--secondary" (click)="onGenerateAndStart()">
+                Generate & Start
+              </button>
+              <button type="button" class="btn btn--ghost" (click)="startSolving()">
+                Start Solving (fetch pending)
+              </button>
+            </div>
+
+            <div class="solver" *ngIf="currentExamId">
+              <div class="solver__row">
+                <strong>Exam ID:</strong> {{ currentExamId }}
+              </div>
+              <div class="solver__row">
+                <strong>Task Exam ID:</strong> {{ currentTaskExamId || 'N/A' }}
+              </div>
+              <div class="solver__row">
+                <strong>Pending:</strong>
+                <pre class="result__pre">{{ pendingExam | json }}</pre>
+              </div>
+              <div class="form__row">
+                <label class="form__field" style="flex:1">
+                  <span class="form__label">Your Answer</span>
+                  <input class="form__control" [(ngModel)]="currentAnswer" name="currentAnswer" [ngModelOptions]="{standalone: true}" />
+                </label>
+                <button type="button" class="btn btn--primary" (click)="submitCurrentAnswer()">Submit Answer</button>
+                <button type="button" class="btn btn--secondary" (click)="finishCurrentExam()">Finish Exam</button>
+              </div>
             </div>
           </form>
         </article>
@@ -762,7 +791,13 @@ export class PanelComponent {
   deleteForm = this.fb.nonNullable.group({ id: [''] });
   gradeForm = this.fb.nonNullable.group({ grade: [''] });
 
-  generateForm = this.fb.nonNullable.group({ subject: [''], grade: [''], count: [1]});
+  generateForm = this.fb.nonNullable.group({ taskId: [''], count: [1], students: ['']});
+
+  // Solving state
+  currentExamId: string | null = null;
+  currentTaskExamId: string | null = null;
+  pendingExam: any = null;
+  currentAnswer: string = '';
 
   sectionAddForm = this.fb.nonNullable.group({ section: [''] });
   sectionGetForm = this.fb.nonNullable.group({ sectionId: [''] });
@@ -788,9 +823,8 @@ export class PanelComponent {
   loadAllTasks() { this.tasks.getAllTasks().subscribe(r => this.lastResult = r); }
 
   onCreate() {
-    const model = this.parseJson(this.createForm.value.model || '{}');
     if (!this.createFile) return;
-    this.tasks.createTask(model, this.createFile).subscribe(r => this.lastResult = r);
+    this.tasks.createTask(JSON.parse(this.createForm.value.model || ''), this.createFile).subscribe(r => this.lastResult = r);
   }
 
   onUpdate() {
@@ -819,7 +853,45 @@ export class PanelComponent {
 
   onGenerate() {
     const val = this.generateForm.getRawValue();
-    this.tasks.generateTask(val).subscribe(r => this.lastResult = r);
+    const studentsCsv = (val.students || '').trim();
+    const students = studentsCsv ? studentsCsv.split(',').map(s => s.trim()).filter(Boolean) : undefined;
+    const payload: any = { taskId: val.taskId || '', count: Number(val.count) || 1 };
+    if (students && students.length) payload.students = students;
+    this.tasks.generateTask(payload).subscribe(r => this.lastResult = r);
+  }
+
+  onGenerateAndStart() {
+    this.onGenerate();
+    // Once generated, try to start solving (fetch pending)
+    setTimeout(() => this.startSolving(), 200);
+  }
+
+  startSolving() {
+    this.tasks.fetchPendingExam().subscribe(r => {
+      this.pendingExam = r;
+      this.lastResult = r;
+      // Infer ids if present
+      this.currentExamId = r?.examId || r?.id || this.currentExamId;
+      this.currentTaskExamId = r?.examTaskId;
+    });
+  }
+
+  submitCurrentAnswer() {
+    if (!this.currentExamId || !this.currentTaskExamId) return;
+    const ans = this.currentAnswer || '';
+    this.tasks.checkResultExam(this.currentExamId, this.currentTaskExamId, ans).subscribe(r => {
+      this.lastResult = r;
+      // After checking, try to fetch next pending
+      this.currentAnswer = '';
+      this.startSolving();
+    });
+  }
+
+  finishCurrentExam() {
+    if (!this.currentExamId) return;
+    this.tasks.finishExam(this.currentExamId).subscribe(r => {
+      this.lastResult = r;
+    });
   }
 
   onAddSection() {

@@ -24,9 +24,9 @@ export interface TaskUpdateRequestModel extends TaskRequestModel {
 }
 
 export interface GeneratedTaskRequestModel {
-  subject?: string;
-  count?: number;
-  grade?: string;
+  taskId: string;
+  count: number;
+  students?: string[];
   [k: string]: any;
 }
 
@@ -45,20 +45,20 @@ export class TaskService {
 
   createTask(model: TaskRequestModel, file: File): Observable<any> {
     const body = this.toFormData(model, file);
-    return this.http.post(`${this.baseUrl}/create`, body);
+    return this.http.post(`${this.baseUrl}/create`, body, { withCredentials: true });
   }
 
   updateTask(model: TaskUpdateRequestModel, file: File): Observable<any> {
     const body = this.toFormData(model, file);
-    return this.http.patch(`${this.baseUrl}/update`, body);
+    return this.http.patch(`${this.baseUrl}/update`, body, { withCredentials: true });
   }
 
   deleteTask(taskId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/delete`, { params: { 'task-id': taskId } });
+    return this.http.delete<void>(`${this.baseUrl}/delete`, { params: { 'task-id': taskId }, withCredentials: true });
   }
 
   getTaskById(taskId: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/get-by-id`, { params: { 'task-id': taskId } });
+    return this.http.get(`${this.baseUrl}/get-by-id`, { params: { 'task-id': taskId }, withCredentials: true });
   }
 
   getTasksByUser(userId: string): Observable<any> {
@@ -66,7 +66,7 @@ export class TaskService {
   }
 
   getMyTasks(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/get-my-tasks`);
+    return this.http.get(`${this.baseUrl}/get-my-tasks`, { withCredentials: true });
   }
 
   getAllTasks(): Observable<any> {
@@ -78,7 +78,7 @@ export class TaskService {
     }
 
   generateTask(payload: GeneratedTaskRequestModel): Observable<any> {
-    return this.http.post(`${this.baseUrl}/generate`, payload);
+    return this.http.post(`${this.baseUrl}/generate`, payload, { withCredentials: true });
   }
 
   getByExamExistTaskId(taskId: string): Observable<any> {
@@ -86,7 +86,7 @@ export class TaskService {
   }
 
   getAllExamExist(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/get-all-exist-exam`);
+    return this.http.get(`${this.baseUrl}/get-all-exist-exam`, { withCredentials: true });
   }
 
   addSection(section: string): Observable<any> {
@@ -106,7 +106,7 @@ export class TaskService {
   }
 
   checkResultExam(examId: string, taskExamId: string, answer: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/check-result-exam`, { params: { examId, taskExamId, answer } });
+    return this.http.get(`${this.baseUrl}/check-result-exam`, { params: { examId, taskExamId, answer }, withCredentials: true });
   }
 
   getAllResultExamByUser(userId: string): Observable<any> {
@@ -114,10 +114,10 @@ export class TaskService {
   }
 
   fetchPendingExam(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/fetch-pending-exam`);
+    return this.http.get(`${this.baseUrl}/fetch-pending-exam`, { withCredentials: true });
   }
 
   finishExam(examId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/finish-exam`, null, { params: { examId } });
+    return this.http.post(`${this.baseUrl}/finish-exam`, null, { params: { examId }, withCredentials: true });
   }
 }
