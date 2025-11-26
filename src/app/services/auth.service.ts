@@ -39,7 +39,7 @@ function getApiBaseUrl(): string {
   const fromMeta = (document.querySelector('meta[name="api-base-url"]') as HTMLMetaElement)?.content;
   if (fromMeta) return fromMeta;
   // Default for local development
-  return 'http://localhost:8080';
+  return 'https://reshavalnik-api.homelabapps.xyz';
 }
 
 /**

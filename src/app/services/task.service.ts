@@ -8,7 +8,7 @@ function getApiBaseUrl(): string {
   if (fromWindow) return fromWindow as string;
   const fromMeta = (document.querySelector('meta[name="api-base-url"]') as HTMLMetaElement)?.content;
   if (fromMeta) return fromMeta;
-  return 'http://localhost:8080';
+  return 'https://reshavalnik-api.homelabapps.xyz';
 }
 
 export interface TaskRequestModel {
