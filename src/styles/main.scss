@@ -1,0 +1,13 @@
+@import './topnav.scss';
+@import './auth.scss';
+@import './panel.scss';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
