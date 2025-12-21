@@ -1,11 +1,5 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-
+  <div class="auth-callback-view">
+    Auth Callback
+  </div>
 </template>
-
-<style scoped>
-
-</style>

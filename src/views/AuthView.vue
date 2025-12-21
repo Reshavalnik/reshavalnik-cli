@@ -1,11 +1,5 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-
+  <div class="auth-view">
+    Auth
+  </div>
 </template>
-
-<style scoped>
-
-</style>

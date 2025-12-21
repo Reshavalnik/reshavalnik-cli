@@ -1,11 +1,5 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-
+  <div class="panel-view">
+    Panel
+  </div>
 </template>
-
-<style scoped>
-
-</style>
