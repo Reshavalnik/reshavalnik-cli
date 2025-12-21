@@ -3,12 +3,11 @@ import axios, { type AxiosError } from 'axios'
 const TOKEN_STORAGE_KEY = 'token'
 
 const getAuthToken = (): string | null => {
-  return localStorage.getItem(TOKEN_STORAGE_KEY) || sessionStorage.getItem(TOKEN_STORAGE_KEY)
+  return localStorage.getItem(TOKEN_STORAGE_KEY)
 }
 
 const clearAuthStorage = (): void => {
   localStorage.removeItem(TOKEN_STORAGE_KEY)
-  sessionStorage.removeItem(TOKEN_STORAGE_KEY)
 }
 
 const http = axios.create({
