@@ -521,6 +521,30 @@ const formatJson = (value: unknown) => {
   }
 }
 
+const formatError = (error: unknown): string => {
+  if (typeof error === 'string') {
+    return error
+  }
+
+  if (error && typeof error === 'object') {
+    const responseData = (error as { response?: { data?: unknown } }).response?.data
+    if (responseData !== undefined) {
+      return typeof responseData === 'string' ? responseData : formatJson(responseData)
+    }
+
+    const message = (error as { message?: string }).message
+    if (message) {
+      return message
+    }
+  }
+
+  return 'Request failed'
+}
+
+const handleError = (error: unknown) => {
+  lastResult.value = { error: formatError(error) }
+}
+
 const onFileSelect = (event: Event, type: 'create' | 'update') => {
   const input = event.target as HTMLInputElement
   const file = input.files && input.files[0] ? input.files[0] : null
@@ -540,42 +564,70 @@ const parseJson = (value: string): Record<string, unknown> => {
 }
 
 const loadMyTasks = async () => {
-  lastResult.value = await getMyTasks()
+  try {
+    lastResult.value = await getMyTasks()
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const loadAllTasks = async () => {
-  lastResult.value = await getAllTasks()
+  try {
+    lastResult.value = await getAllTasks()
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onCreate = async () => {
   if (!createFile.value) return
-  const model = JSON.parse(createForm.model || '')
-  lastResult.value = await createTask(model, createFile.value)
+  try {
+    const model = JSON.parse(createForm.model || '')
+    lastResult.value = await createTask(model, createFile.value)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onUpdate = async () => {
   if (!updateFile.value) return
-  const model = parseJson(updateForm.model || '{}')
-  lastResult.value = await updateTask(model as { id: string }, updateFile.value)
+  try {
+    const model = parseJson(updateForm.model || '{}')
+    lastResult.value = await updateTask(model as { id: string }, updateFile.value)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onFindById = async () => {
   const id = findForm.id || ''
   if (!id) return
-  lastResult.value = await getTaskById(id)
+  try {
+    lastResult.value = await getTaskById(id)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onFindByGrade = async () => {
   const grade = gradeForm.grade || ''
   if (!grade) return
-  lastResult.value = await getAllTasksByGrade(grade)
+  try {
+    lastResult.value = await getAllTasksByGrade(grade)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onDelete = async () => {
   const id = deleteForm.id || ''
   if (!id) return
-  await deleteTask(id)
-  lastResult.value = { deleted: id }
+  try {
+    await deleteTask(id)
+    lastResult.value = { deleted: id }
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGenerate = async () => {
@@ -590,7 +642,11 @@ const onGenerate = async () => {
   if (students && students.length) {
     payload.students = students
   }
-  lastResult.value = await generateTask(payload)
+  try {
+    lastResult.value = await generateTask(payload)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGenerateAndStart = () => {
@@ -601,82 +657,134 @@ const onGenerateAndStart = () => {
 }
 
 const startSolving = async () => {
-  const response = await fetchPendingExam()
-  pendingExam.value = response
-  lastResult.value = response
-  currentExamId.value = (response as { examId?: string; id?: string })?.examId
-    || (response as { examId?: string; id?: string })?.id
-    || currentExamId.value
-  currentTaskExamId.value = (response as { examTaskId?: string })?.examTaskId ?? null
+  try {
+    const response = await fetchPendingExam()
+    pendingExam.value = response
+    lastResult.value = response
+    currentExamId.value = (response as { examId?: string; id?: string })?.examId
+      || (response as { examId?: string; id?: string })?.id
+      || currentExamId.value
+    currentTaskExamId.value = (response as { examTaskId?: string })?.examTaskId ?? null
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const submitCurrentAnswer = async () => {
   if (!currentExamId.value || !currentTaskExamId.value) return
   const answer = currentAnswer.value || ''
-  lastResult.value = await checkResultExam(currentExamId.value, currentTaskExamId.value, answer)
-  currentAnswer.value = ''
-  void startSolving()
+  try {
+    lastResult.value = await checkResultExam(currentExamId.value, currentTaskExamId.value, answer)
+    currentAnswer.value = ''
+    void startSolving()
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const finishCurrentExam = async () => {
   if (!currentExamId.value) return
-  lastResult.value = await finishExam(currentExamId.value)
+  try {
+    lastResult.value = await finishExam(currentExamId.value)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onAddSection = async () => {
   const section = sectionAddForm.section || ''
   if (!section) return
-  lastResult.value = await addSection(section)
+  try {
+    lastResult.value = await addSection(section)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGetSection = async () => {
   const sectionId = sectionGetForm.sectionId || ''
   if (!sectionId) return
-  lastResult.value = await getSection(sectionId)
+  try {
+    lastResult.value = await getSection(sectionId)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGetAllSections = async () => {
-  lastResult.value = await getAllSections()
+  try {
+    lastResult.value = await getAllSections()
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onDeleteSection = async () => {
   const sectionId = sectionDeleteForm.sectionId || ''
   if (!sectionId) return
-  await deleteSection(sectionId)
-  lastResult.value = { deletedSection: sectionId }
+  try {
+    await deleteSection(sectionId)
+    lastResult.value = { deletedSection: sectionId }
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGetByExamExistTaskId = async () => {
   const taskId = existTaskForm.taskId || ''
   if (!taskId) return
-  lastResult.value = await getByExamExistTaskId(taskId)
+  try {
+    lastResult.value = await getByExamExistTaskId(taskId)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGetAllExamExist = async () => {
-  lastResult.value = await getAllExamExist()
+  try {
+    lastResult.value = await getAllExamExist()
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onCheckExam = async () => {
-  lastResult.value = await checkResultExam(
-    checkExamForm.examId || '',
-    checkExamForm.taskExamId || '',
-    checkExamForm.answer || '',
-  )
+  try {
+    lastResult.value = await checkResultExam(
+      checkExamForm.examId || '',
+      checkExamForm.taskExamId || '',
+      checkExamForm.answer || '',
+    )
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onFetchPendingExam = async () => {
-  lastResult.value = await fetchPendingExam()
+  try {
+    lastResult.value = await fetchPendingExam()
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onFinishExam = async () => {
   const examId = finishExamForm.examId || ''
   if (!examId) return
-  lastResult.value = await finishExam(examId)
+  try {
+    lastResult.value = await finishExam(examId)
+  } catch (error) {
+    handleError(error)
+  }
 }
 
 const onGetAllResultExamByUser = async () => {
   const userId = resultByUserForm.userId || ''
   if (!userId) return
-  lastResult.value = await getAllResultExamByUser(userId)
+  try {
+    lastResult.value = await getAllResultExamByUser(userId)
+  } catch (error) {
+    handleError(error)
+  }
 }
 </script>

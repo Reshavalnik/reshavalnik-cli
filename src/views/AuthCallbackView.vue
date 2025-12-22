@@ -28,8 +28,16 @@ onMounted(async () => {
 
   if (token) {
     setAccessToken(token)
-    await router.replace('/panel')
-    return
+    try {
+      await me()
+      await router.replace('/panel')
+      return
+    } catch {
+      errorMessage.value = 'Authentication failed. Redirecting to login...'
+      clear()
+      await router.replace('/auth')
+      return
+    }
   }
 
   try {

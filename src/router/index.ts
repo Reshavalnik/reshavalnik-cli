@@ -41,10 +41,6 @@ router.beforeEach(async (to) => {
     return true
   }
 
-  if (isAuthenticated()) {
-    return true
-  }
-
   if (!authInitAttempted) {
     authInitAttempted = true
     try {
@@ -53,6 +49,10 @@ router.beforeEach(async (to) => {
     } catch {
       return { path: '/auth' }
     }
+  }
+
+  if (isAuthenticated()) {
+    return true
   }
 
   return { path: '/auth' }
