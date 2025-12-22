@@ -1,0 +1,399 @@
+/* ---- Theme ---- */
+:root {
+  --bg: var(--offColor, #f7f7f5);
+  --surface: #ffffff;
+  --ink: var(--mainColor, #151313);
+  --muted: #6b6b6b;
+  --line: #e7e7e2;
+  --shadow: 0 8px 28px rgba(0, 0, 0, .08);
+  --radius: 20px;
+  --radius-lg: 28px;
+}
+
+/* ---- Page frame ---- */
+.auth-page {
+  height: 100dvh;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  padding: clamp(12px, 3vw, 36px);
+  background: var(--bg);
+  color: var(--ink);
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 28px;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* Left column */
+.form-wrap {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 36px;
+  box-shadow: var(--shadow);
+}
+
+.container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(20px, 4vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: auto;
+}
+
+.brand-chip {
+  align-self: flex-start;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #fafaf8;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-size: clamp(28px, 4vw, 34px);
+  font-weight: 700;
+  margin: 4px 0 6px;
+  letter-spacing: -.02em;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+/* OAuth buttons */
+.oauth {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.oauth img {
+  display: inline-block;
+}
+
+/* Divider */
+.divider {
+  display: grid;
+  place-items: center;
+  margin: 16px 0;
+  position: relative;
+  height: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.divider span {
+  background: var(--surface);
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Form */
+.form {
+  display: grid;
+  gap: 12px;
+}
+
+.form label {
+  display: grid;
+  gap: 8px;
+}
+
+.form label span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.form input {
+  border: 1px solid var(--line);
+  background: #fcfcfb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: #c8c8c1;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, .035);
+  background: #fff;
+}
+
+.password {
+  position: relative;
+}
+
+.password .peek {
+  position: absolute;
+  right: 8px;
+  top: 28px;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: .6;
+  transition: opacity .2s ease;
+}
+
+.password .peek:hover {
+  opacity: 1;
+}
+
+.footnote {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.footnote .link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  margin-left: 4px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-pill {
+  border-radius: 999px;
+}
+
+.btn-outline:hover {
+  background: #fafaf8;
+}
+
+.btn-primary {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #000;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+}
+
+.btn-wide {
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-wide .arrow {
+  margin-left: 6px;
+}
+
+/* ---- Mosaic ---- */
+.mosaic {
+  position: relative;
+  border-radius: 36px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: #fff;
+}
+
+.mosaic img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  content: var(--mosaicImage);
+  display: block;
+  border-radius: 50px;
+}
+
+/* Grid overlay */
+.mosaic .art-1, .art-2 {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 24px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.mosaic .art-1 {
+  background: white;
+  mix-blend-mode: lighten;
+}
+
+.mosaic .art-2 {
+  position: absolute;
+  top: 0;
+  background: transparent;
+}
+
+/* Base tile */
+.tile {
+  border-radius: 18px;
+  position: relative;
+}
+
+.mosaic .art-1 .tile {
+  background: black;
+}
+
+.mosaic .art-1 .panel {
+  border-radius: 50px;
+}
+
+.mosaic .art-1 .neon {
+  border-radius: 50px;
+}
+
+.mosaic .art-1 .aqua {
+  border-radius: 50px;
+}
+
+/* Shapes */
+.tile.tall {
+  grid-row: span 2;
+}
+
+.tile.wide {
+  grid-column: span 2;
+}
+
+/* ---- Special Tiles ---- */
+
+/* Panel */
+.panel {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+}
+
+.panel .chip-list {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.panel .chip {
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #e9e9e9;
+}
+
+.panel .chip.is-active {
+  background: #fff;
+  color: #111;
+}
+
+.panel .panel-title {
+  font-size: 18px;
+  margin: 8px 0 2px;
+}
+
+.panel .panel-sub {
+  font-size: 12px;
+  color: #cfcfcf;
+  margin: 0;
+}
+
+/* Neon */
+.neon {
+  background: #f3ff53;
+  color: #0f0f0f;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.neon h3 {
+  font-size: 22px;
+  line-height: 1.05;
+  margin: 0 0 6px;
+  letter-spacing: -.01em;
+}
+
+.neon p {
+  font-size: 12px;
+  color: #272727;
+  max-width: 28ch;
+}
+
+.neon .cta-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  font-size: 20px;
+}
+
+/* Aqua */
+.aqua {
+  background: #9bf6e2;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 980px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .mosaic {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(100px, 18vh);
+  }
+}
+
+@media (max-width: 620px) {
+  .oauth {
+    grid-template-columns: 1fr;
+  }
+
+  .mosaic {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(80px, 16vh);
+  }
+}

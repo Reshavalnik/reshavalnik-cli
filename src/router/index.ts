@@ -4,6 +4,7 @@ import AuthCallbackView from '../views/AuthCallbackView.vue'
 import PanelView from '../views/PanelView.vue'
 import { me } from '../services/auth'
 import { isAuthenticated } from '../services/tokenStorage'
+import { logAuthState, logRouteChange } from '../dev/runtimeDiagnostics'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -57,5 +58,12 @@ router.beforeEach(async (to) => {
 
   return { path: '/auth' }
 })
+
+if (import.meta.env.DEV) {
+  router.afterEach((to, from) => {
+    logRouteChange(to, from)
+    logAuthState('afterEach')
+  })
+}
 
 export default router
