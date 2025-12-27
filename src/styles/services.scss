@@ -34,6 +34,7 @@
   border-radius: 999px;
   padding: 8px 8px;
   font-size: 12px;
+  color: #1f1f1f;
   text-align: center;
   width: 100%;
   cursor: pointer;
@@ -42,12 +43,19 @@
 
 .services-sidebar__item:hover {
   background: #efefe9;
+  color: #1a1a1a;
 }
 
 .services-sidebar__item.is-active {
   background: #171717;
   color: #fff;
   border-color: #171717;
+}
+
+.services-sidebar__item:disabled {
+  opacity: .6;
+  color: #2a2a2a;
+  cursor: not-allowed;
 }
 
 .services-content {
@@ -59,6 +67,107 @@
 .services-content__header {
   display: flex;
   justify-content: flex-end;
+}
+
+.services-card {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, .06);
+  background: #fff;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .06);
+}
+
+.services-card--compact {
+  margin-top: 16px;
+  padding: 14px 16px;
+}
+
+.services-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.services-card__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.services-card__status {
+  font-size: 12px;
+  color: #7a7a7a;
+}
+
+.services-card__error {
+  margin: 0;
+  color: #a33;
+  font-size: 13px;
+}
+
+.services-grade-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.services-grade {
+  border: 1px solid rgba(0, 0, 0, .08);
+  background: #f7f7f5;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #1f1f1f;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.services-grade.is-selected {
+  background: #171717;
+  color: #fff;
+  border-color: #171717;
+}
+
+.services-grade:hover {
+  color: #1a1a1a;
+}
+
+.services-section-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.services-section {
+  border: 1px solid rgba(0, 0, 0, .08);
+  background: #f7f7f5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #1f1f1f;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.services-section.is-selected {
+  background: #171717;
+  color: #fff;
+  border-color: #171717;
+}
+
+.services-card__label {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #7a7a7a;
+}
+
+.services-card__value {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .services-nav__button {

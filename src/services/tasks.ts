@@ -18,6 +18,19 @@ export interface GeneratedTaskRequestModel {
   [key: string]: unknown
 }
 
+export interface GradeDto {
+  key: string
+  label: string
+  desc?: string
+  level?: number
+}
+
+export interface SectionDto {
+  id: string
+  sectionName: string
+  grade?: unknown
+}
+
 const taskBase = '/api/task'
 
 const toFormData = (model: TaskRequestModel, file?: File): FormData => {
@@ -93,8 +106,10 @@ const getSection = async (sectionId: string): Promise<unknown> => {
   return response.data
 }
 
-const getAllSections = async (): Promise<unknown> => {
-  const response = await http.get(`${taskBase}/get-all-sections`)
+const getAllSections = async (gradeName?: string): Promise<SectionDto[]> => {
+  const response = await http.get(`${taskBase}/get-all-sections`, {
+    params: gradeName ? { grade: gradeName } : undefined,
+  })
   return response.data
 }
 
@@ -124,6 +139,53 @@ const finishExam = async (examId: string): Promise<unknown> => {
   return response.data
 }
 
+const normalizeGrades = (payload: unknown): GradeDto[] => {
+  if (!Array.isArray(payload)) {
+    return []
+  }
+
+  return payload
+    .map((item): GradeDto | null => {
+      if (typeof item === 'string') {
+        return { key: item, label: item }
+      }
+
+      if (item && typeof item === 'object') {
+        const record = item as Record<string, unknown>
+        const keyCandidate = record.name ?? record.key ?? record.enum ?? record.code ?? record.id
+        const labelCandidate = record.label ?? record.title ?? record.value ?? record.displayName ?? record.desc ?? record.name
+        const descCandidate = record.desc ?? record.description ?? record.label ?? record.title ?? record.value
+        const numericCandidate = record.level ?? record.number ?? record.grade ?? record.rank ?? record.index
+        const level = typeof numericCandidate === 'number' ? numericCandidate : undefined
+        const key = typeof keyCandidate === 'string' ? keyCandidate : String(keyCandidate ?? '')
+        const label = typeof labelCandidate === 'string' ? labelCandidate : String(labelCandidate ?? '')
+        const desc = typeof descCandidate === 'string' ? descCandidate : undefined
+
+        if (!key && !label && level === undefined) {
+          return null
+        }
+
+        const fallbackKey = key || (level !== undefined ? `G${level}` : label)
+        const fallbackLabel = label || (level !== undefined ? `Клас ${level}` : key)
+
+        return {
+          key: fallbackKey,
+          label: fallbackLabel,
+          desc: desc ?? fallbackLabel,
+          level,
+        }
+      }
+
+      return null
+    })
+    .filter((item): item is GradeDto => item !== null)
+}
+
+const getAllGrades = async (): Promise<GradeDto[]> => {
+  const response = await http.get(`${taskBase}/all-grade`)
+  return normalizeGrades(response.data)
+}
+
 export {
   createTask,
   updateTask,
@@ -144,4 +206,5 @@ export {
   getAllResultExamByUser,
   fetchPendingExam,
   finishExam,
+  getAllGrades,
 }
