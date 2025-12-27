@@ -15,6 +15,7 @@ const loadingSections = ref(false)
 const sectionsErrorMessage = ref<string | null>(null)
 
 const lessonEnabled = computed(() => selectedGrade.value !== null)
+const taskEnabled = computed(() => selectedSection.value !== null)
 const gradeName = computed(() => selectedGrade.value?.key ?? '')
 
 const loadGrades = async (): Promise<void> => {
@@ -34,7 +35,7 @@ const setActiveSection = (next: Section): void => {
   if (next === 'lesson' && !lessonEnabled.value) {
     return
   }
-  if (next === 'task') {
+  if (next === 'task' && !taskEnabled.value) {
     return
   }
   activeSection.value = next
@@ -103,7 +104,8 @@ onMounted(async () => {
         type="button"
         class="services-sidebar__item"
         :class="{ 'is-active': activeSection === 'task' }"
-        disabled
+        :disabled="!taskEnabled"
+        @click="setActiveSection('task')"
       >
         Задача
       </button>
