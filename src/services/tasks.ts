@@ -14,8 +14,29 @@ export interface TaskUpdateRequestModel extends TaskRequestModel {
 export interface GeneratedTaskRequestModel {
   taskId: string
   count: number
-  students?: string[]
-  [key: string]: unknown
+  students: string[]
+}
+
+export interface GeneratedTaskResponse {
+  grade?: {
+    level?: number
+    desc?: string
+    name?: string
+  }
+  section?: {
+    id?: string
+    sectionName?: string
+  }
+  taskSection?: {
+    id?: string
+    taskName?: string
+  }
+  tasks?: Array<{
+    id?: string
+    task?: string
+    options?: Record<string, string>
+    hint?: string
+  }>
 }
 
 export interface GradeDto {
@@ -29,6 +50,11 @@ export interface SectionDto {
   id: string
   sectionName: string
   grade?: unknown
+}
+
+export interface TaskDto {
+  id: string
+  taskName: string
 }
 
 const taskBase = '/api/task'
@@ -81,9 +107,47 @@ const getAllTasksByGrade = async (grade: string): Promise<unknown> => {
   return response.data
 }
 
-const generateTask = async (payload: GeneratedTaskRequestModel): Promise<unknown> => {
-  const response = await http.post(`${taskBase}/generate`, payload)
+const getTasksBySection = async (sectionId: string): Promise<TaskDto[]> => {
+  const response = await http.get(`${taskBase}/get-by-section`, { params: { sectionId } })
+  if (!Array.isArray(response.data)) {
+    return []
+  }
   return response.data
+    .map((item): TaskDto | null => {
+      if (!item || typeof item !== 'object') {
+        return null
+      }
+      const record = item as Record<string, unknown>
+      const id = typeof record.id === 'string' ? record.id : ''
+      const taskSection = record.taskSection as Record<string, unknown> | undefined
+      const taskName = typeof taskSection?.taskName === 'string' ? taskSection.taskName : ''
+      if (!id) {
+        return null
+      }
+      return { id, taskName }
+    })
+    .filter((item): item is TaskDto => item !== null)
+}
+
+type GeneratedTaskRequestInput = GeneratedTaskRequestModel | {
+  taskId: string
+  count: number
+  students?: string[]
+}
+
+const normalizeGeneratePayload = (payload: GeneratedTaskRequestInput): GeneratedTaskRequestModel => {
+  return {
+    taskId: payload.taskId,
+    count: payload.count,
+    students: payload.students ?? [],
+  }
+}
+
+export function generateTask(payload: GeneratedTaskRequestModel): Promise<GeneratedTaskResponse>
+export function generateTask(payload: GeneratedTaskRequestInput): Promise<GeneratedTaskResponse>
+export function generateTask(payload: GeneratedTaskRequestInput): Promise<GeneratedTaskResponse> {
+  const response = http.post(`${taskBase}/generate`, normalizeGeneratePayload(payload))
+  return response.then((result) => result.data)
 }
 
 const getByExamExistTaskId = async (taskId: string): Promise<unknown> => {
@@ -117,7 +181,7 @@ const deleteSection = async (sectionId: string): Promise<void> => {
   await http.delete(`${taskBase}/delete-section`, { params: { sectionId } })
 }
 
-const checkResultExam = async (examId: string, taskExamId: string, answer: string): Promise<unknown> => {
+const checkResultExam = async (examId: string, taskExamId: string, answer: string): Promise<any> => {
   const response = await http.get(`${taskBase}/check-result-exam`, {
     params: { examId, taskExamId, answer },
   })
@@ -195,13 +259,13 @@ export {
   getMyTasks,
   getAllTasks,
   getAllTasksByGrade,
-  generateTask,
   getByExamExistTaskId,
   getAllExamExist,
   addSection,
   getSection,
   getAllSections,
   deleteSection,
+  getTasksBySection,
   checkResultExam,
   getAllResultExamByUser,
   fetchPendingExam,
