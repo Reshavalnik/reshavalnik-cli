@@ -52,3 +52,11 @@ This includes:
 - Behavior matches the Angular app for the feature being migrated
 - No unnecessary diffs outside the requested scope
 - `npm run build` passes
+
+## Codex Rules
+
+- The current codebase is the source of truth.
+- Do NOT revert, simplify, or refactor existing working logic.
+- Only modify files and lines explicitly required by the prompt.
+- If logic is unclear, ASK instead of guessing.
+- Never reintroduce previously removed code paths.
