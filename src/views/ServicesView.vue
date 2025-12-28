@@ -11,6 +11,13 @@ import {
   type SectionDto,
   type TaskDto,
 } from '../services/tasks'
+import ServicesSidebar from '../components/services/ServicesSidebar.vue'
+import GradePickerCard from '../components/services/GradePickerCard.vue'
+import SectionPickerCard from '../components/services/SectionPickerCard.vue'
+import TaskTemplatePickerCard from '../components/services/TaskTemplatePickerCard.vue'
+import TaskGenerateCard from '../components/services/TaskGenerateCard.vue'
+import GeneratedTaskCard from '../components/services/GeneratedTaskCard.vue'
+import CheckResultCard from '../components/services/CheckResultCard.vue'
 
 type Section = 'class' | 'lesson' | 'task'
 
@@ -175,7 +182,12 @@ const handleGenerate = async (): Promise<void> => {
 const selectAnswer = (taskId: string, optionKey: string): void => {
   selectedAnswers.value = { ...selectedAnswers.value, [taskId]: optionKey }
   selectedGeneratedTask.value = { id: taskId }
-  activeTaskId.value = generatedTask.value?.id || null
+  const generated = generatedTask.value as { id?: string } | null
+  activeTaskId.value = generated?.id ?? null
+}
+
+const updateTaskCount = (value: number): void => {
+  taskCount.value = value
 }
 
 const submitAnswer = async (): Promise<void> => {
@@ -223,35 +235,12 @@ onMounted(async () => {
 
 <template>
   <div class="services-page">
-    <aside class="services-sidebar">
-      <h2 class="services-sidebar__title">Навигация</h2>
-      <button
-        type="button"
-        class="services-sidebar__item"
-        :class="{ 'is-active': activeSection === 'class' }"
-        @click="setActiveSection('class')"
-      >
-        Клас
-      </button>
-      <button
-        type="button"
-        class="services-sidebar__item"
-        :class="{ 'is-active': activeSection === 'lesson' }"
-        :disabled="!lessonEnabled"
-        @click="setActiveSection('lesson')"
-      >
-        Урок
-      </button>
-      <button
-        type="button"
-        class="services-sidebar__item"
-        :class="{ 'is-active': activeSection === 'task' }"
-        :disabled="!taskEnabled"
-        @click="setActiveSection('task')"
-      >
-        Задача
-      </button>
-    </aside>
+    <ServicesSidebar
+      :active-section="activeSection"
+      :lesson-enabled="lessonEnabled"
+      :task-enabled="taskEnabled"
+      @select="setActiveSection"
+    />
 
     <section class="services-content">
       <div class="services-content__header">
@@ -262,49 +251,27 @@ onMounted(async () => {
       </h1>
       <p class="services-subtitle">Available offerings will appear here.</p>
 
-      <div v-if="activeSection === 'class'" class="services-card">
-        <div class="services-card__header">
-          <h2 class="services-card__title">Избери клас</h2>
-          <span v-if="loadingGrades" class="services-card__status">Зареждане...</span>
-        </div>
-        <p v-if="errorMessage" class="services-card__error">{{ errorMessage }}</p>
-        <div v-else class="services-grade-list">
-          <button
-            v-for="grade in grades"
-            :key="grade.key"
-            type="button"
-            class="services-grade"
-            :class="{ 'is-selected': selectedGrade?.key === grade.key }"
-            @click="selectGrade(grade)"
-          >
-            {{ grade.level ?? grade.label }}
-          </button>
-        </div>
-      </div>
+      <GradePickerCard
+        v-if="activeSection === 'class'"
+        :grades="grades"
+        :selected-grade-key="selectedGrade?.key ?? null"
+        :loading="loadingGrades"
+        :error-message="errorMessage"
+        @select="selectGrade"
+      />
 
       <div v-if="selectedGrade" class="services-card services-card--compact">
         <p class="services-card__label">Избран клас: {{ selectedGrade.desc || selectedGrade.label }}</p>
       </div>
 
-      <div v-if="activeSection === 'lesson'" class="services-card">
-        <div class="services-card__header">
-          <h2 class="services-card__title">Избери урок</h2>
-          <span v-if="loadingSections" class="services-card__status">Зареждане...</span>
-        </div>
-        <p v-if="sectionsErrorMessage" class="services-card__error">{{ sectionsErrorMessage }}</p>
-        <div v-else class="services-section-list">
-          <button
-            v-for="section in sectionsByGrade[gradeName] || []"
-            :key="section.id"
-            type="button"
-            class="services-section"
-            :class="{ 'is-selected': selectedSection?.id === section.id }"
-            @click="selectSection(section)"
-          >
-            {{ section.sectionName }}
-          </button>
-        </div>
-      </div>
+      <SectionPickerCard
+        v-if="activeSection === 'lesson'"
+        :sections="sectionsByGrade[gradeName] || []"
+        :selected-section-id="selectedSection?.id ?? null"
+        :loading="loadingSections"
+        :error-message="sectionsErrorMessage"
+        @select="selectSection"
+      />
 
       <div v-if="selectedSection" class="services-card services-card--compact">
         <p class="services-card__label">Избран урок: {{ selectedSection.sectionName }}</p>
@@ -314,78 +281,27 @@ onMounted(async () => {
         <div class="services-card__header">
           <h2 class="services-card__title">Генериране</h2>
         </div>
-        <div class="services-task-picker">
-          <div class="services-task-picker__header">
-            <span class="services-card__label">Избери задача</span>
-            <span v-if="loadingTasks" class="services-card__status">Зареждане...</span>
-          </div>
-          <p v-if="tasksErrorMessage" class="services-card__error">{{ tasksErrorMessage }}</p>
-          <div v-else class="services-task-picker__list">
-            <button
-              v-for="task in tasksBySection[sectionId] || []"
-              :key="task.id"
-              type="button"
-              class="services-task-picker__item"
-              :class="{ 'is-selected': selectedTaskTemplate?.id === task.id }"
-              @click="selectTaskTemplate(task)"
-            >
-              {{ task.taskName }}
-            </button>
-          </div>
-        </div>
-        <div class="services-task-controls">
-          <label class="services-task-controls__field">
-            <span>Брой</span>
-            <input v-model.number="taskCount" type="number" min="1" />
-          </label>
-          <button
-            type="button"
-            class="services-task-controls__button"
-            :disabled="!selectedTaskTemplate"
-            @click="handleGenerate"
-          >
-            Генерирай
-          </button>
-        </div>
-        <p v-if="taskErrorMessage" class="services-card__error">{{ taskErrorMessage }}</p>
+        <TaskTemplatePickerCard
+          :tasks="tasksBySection[sectionId] || []"
+          :selected-task-id="selectedTaskTemplate?.id ?? null"
+          :loading="loadingTasks"
+          :error-message="tasksErrorMessage"
+          @select="selectTaskTemplate"
+        />
+        <TaskGenerateCard
+          :count="taskCount"
+          :can-generate="Boolean(selectedTaskTemplate)"
+          :error-message="taskErrorMessage"
+          @update:count="updateTaskCount"
+          @generate="handleGenerate"
+        />
 
-        <div v-if="generatedTask" class="services-task-result">
-          <div class="services-task-meta">
-            <p v-if="generatedTask.section?.sectionName" class="services-card__label">
-              Раздел: {{ generatedTask.section.sectionName }}
-            </p>
-            <p v-if="generatedTask.taskSection?.taskName" class="services-card__label">
-              Задача: {{ generatedTask.taskSection.taskName }}
-            </p>
-          </div>
-
-          <div v-if="generatedTask.tasks?.length" class="services-task-list">
-            <article v-for="task in generatedTask.tasks" :key="task.id" class="services-task">
-              <p class="services-task__text">{{ task.task }}</p>
-              <div class="services-task__options">
-                <label
-                  v-for="(optionValue, optionKey) in task.options"
-                  :key="optionKey"
-                  class="services-task__option"
-                  :class="{ 'is-selected': task.id && selectedAnswers[task.id] === optionKey }"
-                >
-                  <input
-                    type="radio"
-                    :name="`task-${task.id}`"
-                    :value="optionKey"
-                    :checked="selectedAnswers[task.id || ''] === optionKey"
-                    @change="task.id && selectAnswer(task.id, optionKey)"
-                  />
-                  <span>{{ optionKey }}: {{ optionValue }}</span>
-                </label>
-              </div>
-              <p v-if="task.hint" class="services-task__hint">
-                <span class="services-task__hint-label">Указание:</span>
-                {{ task.hint }}
-              </p>
-            </article>
-          </div>
-        </div>
+        <GeneratedTaskCard
+          v-if="generatedTask"
+          :generated-task="generatedTask"
+          :selected-answers="selectedAnswers"
+          @select-answer="selectAnswer"
+        />
 
         <div class="services-task-submit">
           <button
@@ -400,23 +316,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-if="checkResult" class="services-card services-card--result">
-        <div class="services-result__status" :class="{ 'is-correct': checkResult.result }">
-          {{ checkResult.result ? 'ВЯРНО' : 'ГРЕШНО' }}
-        </div>
-        <div class="services-result__details">
-          <p><strong>Задача:</strong> {{ checkResult.task }}</p>
-          <p><strong>Избран отговор:</strong> {{ checkResult.answer }}</p>
-          <div v-if="checkResult.options" class="services-result__options">
-            <strong>Възможни отговори:</strong>
-            <ul>
-              <li v-for="(value, key) in checkResult.options" :key="key">{{ key }}: {{ value }}</li>
-            </ul>
-          </div>
-          <p v-if="checkResult.hint"><strong>Помощ:</strong> {{ checkResult.hint }}</p>
-          <p v-if="checkResult.solution"><strong>Решение:</strong> {{ checkResult.solution }}</p>
-        </div>
-      </div>
+      <CheckResultCard v-if="checkResult" :result="checkResult" />
     </section>
   </div>
 </template>
