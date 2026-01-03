@@ -306,9 +306,6 @@ onMounted(async () => {
     />
 
     <section class="services-content">
-      <div class="services-content__header">
-        <button type="button" class="services-nav__button">Математика</button>
-      </div>
       <h1 class="services-title">
         {{ activeSection === 'class' ? 'Клас' : activeSection === 'lesson' ? 'Урок' : 'Задача' }}
       </h1>

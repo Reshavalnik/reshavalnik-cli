@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { logout } from '../services/auth'
 import { isAuthenticated } from '../services/tokenStorage'
 
 const router = useRouter()
+const route = useRoute()
 const authed = computed(() => isAuthenticated())
 
 const handleLogin = async (): Promise<void> => {
@@ -17,7 +18,8 @@ const handleLogout = async (): Promise<void> => {
 }
 
 const goToHome = async (): Promise<void> => {
-  await router.push('/login')
+  const authHome = route.path.startsWith('/auth') || route.path.startsWith('/login')
+  await router.push(authHome ? '/auth' : '/login')
 }
 
 const goToMathematic = async (): Promise<void> => {
@@ -32,8 +34,7 @@ const goToMathematic = async (): Promise<void> => {
       <button type="button" class="auth-mosaic-nav__item" @click="goToMathematic">Mathematic</button>
       <button 
         type="button" 
-        class="auth-mosaic-nav__item" 
-        :class="{ 'auth-mosaic-nav__item--active': authed }"
+        class="auth-mosaic-nav__item auth-mosaic-nav__item--active"
         @click="authed ? handleLogout() : handleLogin()"
       >
         {{ authed ? 'Logout' : 'Login' }}

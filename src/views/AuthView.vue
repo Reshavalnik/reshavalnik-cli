@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { signin, signup, getGoogleLoginUrl, getFacebookLoginUrl, logout } from '../services/auth'
-import { setAccessToken, isAuthenticated } from '../services/tokenStorage'
+import { signin, signup, getGoogleLoginUrl, getFacebookLoginUrl } from '../services/auth'
+import { setAccessToken } from '../services/tokenStorage'
+import TopNav from '../components/TopNav.vue'
 
 type Mode = 'login' | 'register'
 
@@ -49,24 +50,6 @@ const togglePasswordVisible = (): void => {
   passwordVisible.value = !passwordVisible.value
 }
 
-const goToAuth = async (): Promise<void> => {
-  await router.push('/auth')
-}
-
-const goToServices = async (): Promise<void> => {
-  await router.push('/student-mathematic')
-}
-
-const isUserAuthenticated = computed(() => isAuthenticated())
-
-const handleAuthAction = async (): Promise<void> => {
-  if (isUserAuthenticated.value) {
-    logout()
-    await router.push('/login')
-  } else {
-    await router.push('/login')
-  }
-}
 </script>
 
 <template>
@@ -179,19 +162,7 @@ const handleAuthAction = async (): Promise<void> => {
     </section>
 
     <div class="auth-mosaic-wrap">
-      <nav class="auth-mosaic-nav" aria-label="Auth page navigation">
-        <div class="auth-mosaic-nav__pill">
-          <button type="button" class="auth-mosaic-nav__item" @click="goToAuth">Home</button>
-          <button type="button" class="auth-mosaic-nav__item" @click="goToServices">Mathematic</button>
-          <button 
-            type="button" 
-            class="auth-mosaic-nav__item auth-mosaic-nav__item--active" 
-            @click="handleAuthAction"
-          >
-            {{ isUserAuthenticated ? 'Logout' : 'Login' }}
-          </button>
-        </div>
-      </nav>
+      <TopNav />
       <section
         class="mosaic"
         aria-hidden="true"
