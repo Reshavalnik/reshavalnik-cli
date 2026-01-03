@@ -3,8 +3,7 @@ import AuthView from '../views/AuthView.vue'
 import AuthCallbackView from '../views/AuthCallbackView.vue'
 import PanelView from '../views/PanelView.vue'
 import StudentMathematic from '../views/StudentMathematic.vue'
-import { me } from '../services/auth'
-import { isAuthenticated } from '../services/tokenStorage'
+import { loggedIn, refreshSession } from '../services/auth'
 import { logAuthState, logRouteChange } from '../dev/runtimeDiagnostics'
 
 const routes: RouteRecordRaw[] = [
@@ -43,7 +42,6 @@ const router = createRouter({
 })
 
 const publicPaths = new Set(['/auth', '/auth/callback', '/login'])
-let authInitAttempted = false
 
 router.beforeEach(async (to) => {
   if (publicPaths.has(to.path)) {
@@ -54,20 +52,13 @@ router.beforeEach(async (to) => {
     return true
   }
 
-  if (!authInitAttempted) {
-    authInitAttempted = true
-    try {
-      await me()
-      return true
-    } catch {
-      return { path: '/login' }
-    }
-  }
-
-  if (isAuthenticated()) {
+  await refreshSession()
+  if (loggedIn.value) {
     return true
   }
-
+  if (to.path === '/login') {
+    return true
+  }
   return { path: '/login' }
 })
 

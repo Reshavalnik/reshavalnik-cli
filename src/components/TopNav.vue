@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { loggedIn, refreshSession } from '../services/auth'
+import { loggedIn, refreshSession, resetSessionState } from '../services/auth'
 import http from '../services/http'
 import { clear } from '../services/tokenStorage'
 
@@ -34,7 +34,7 @@ const handleLogout = async (event?: MouseEvent): Promise<void> => {
   event?.preventDefault()
   await http.post('/auth/logout', null, { withCredentials: true })
   clear()
-  loggedIn.value = false
+  resetSessionState()
   await router.push('/login')
 }
 
@@ -43,7 +43,12 @@ const goToHome = async (): Promise<void> => {
   await router.push(authHome ? '/auth' : '/login')
 }
 
-const goToMathematic = async (): Promise<void> => {
+const goToMathematic = async (event?: MouseEvent): Promise<void> => {
+  event?.preventDefault()
+  if (!loggedIn.value) {
+    await router.push('/login')
+    return
+  }
   await router.push('/student-mathematic')
 }
 </script>

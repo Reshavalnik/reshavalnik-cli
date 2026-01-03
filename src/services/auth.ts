@@ -58,6 +58,11 @@ const refreshSession = async (): Promise<void> => {
   return refreshInFlight
 }
 
+const resetSessionState = (): void => {
+  refreshInFlight = null
+  loggedIn.value = false
+}
+
 const getSession = async (): Promise<boolean> => {
   await refreshSession()
   return loggedIn.value
@@ -89,4 +94,4 @@ const getFacebookLoginUrl = (): string => {
   return buildSocialUrl('facebook')
 }
 
-export { signin, signup, me, refreshSession, loggedIn, getSession, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }
+export { signin, signup, me, refreshSession, resetSessionState, loggedIn, getSession, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }
