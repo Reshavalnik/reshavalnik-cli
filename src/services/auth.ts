@@ -1,16 +1,17 @@
 // Expects backend endpoints: POST /auth/signin, POST /auth/signup, GET /auth/me; social login URLs: <baseURL>/oauth2/authorization/<provider>.
+import { ref } from 'vue'
 import http from './http'
 import { clear } from './tokenStorage'
 
 export interface SigninPayload {
-  email: string
+  username: string
   password: string
 }
 
 export interface SignupPayload {
-  email: string
+  email?: string
   password: string
-  name?: string
+  username: string
 }
 
 export type AuthResponse = Record<string, unknown>
@@ -37,7 +38,42 @@ const me = async (): Promise<AuthResponse> => {
   return response.data
 }
 
-const logout = (): void => {
+const loggedIn = ref(false)
+let refreshInFlight: Promise<void> | null = null
+
+const refreshSession = async (): Promise<void> => {
+  if (refreshInFlight) {
+    return refreshInFlight
+  }
+  refreshInFlight = (async () => {
+    try {
+      await me()
+      loggedIn.value = true
+    } catch {
+      loggedIn.value = false
+    } finally {
+      refreshInFlight = null
+    }
+  })()
+  return refreshInFlight
+}
+
+const getSession = async (): Promise<boolean> => {
+  await refreshSession()
+  return loggedIn.value
+}
+
+const logout = async (): Promise<void> => {
+  // await http.post('/auth/logout', null, { withCredentials: true })
+  try {
+    await http.post('/auth/logout', null, { withCredentials: true })
+    console.log('logout request sent OK')
+  } catch (e) {
+    console.error('logout failed', e)
+    throw e
+  } finally {
+    console.log('logout finally')
+  }
   clear()
 }
 
@@ -53,4 +89,4 @@ const getFacebookLoginUrl = (): string => {
   return buildSocialUrl('facebook')
 }
 
-export { signin, signup, me, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }
+export { signin, signup, me, refreshSession, loggedIn, getSession, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }

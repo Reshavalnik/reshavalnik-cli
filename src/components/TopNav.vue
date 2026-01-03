@@ -1,19 +1,40 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { logout } from '../services/auth'
-import { isAuthenticated } from '../services/tokenStorage'
+import { loggedIn, refreshSession } from '../services/auth'
+import http from '../services/http'
+import { clear } from '../services/tokenStorage'
 
 const router = useRouter()
 const route = useRoute()
-const authed = computed(() => isAuthenticated())
+const syncAuthState = async (): Promise<void> => {
+  const isAuthRoute = route.path.startsWith('/auth') || route.path.startsWith('/login')
+  if (isAuthRoute) {
+    return
+  }
+  await refreshSession()
+}
+
+onMounted(() => {
+  void syncAuthState()
+})
+
+watch(
+  () => route.fullPath,
+  () => {
+    void syncAuthState()
+  },
+)
 
 const handleLogin = async (): Promise<void> => {
   await router.push('/login')
 }
 
-const handleLogout = async (): Promise<void> => {
-  logout()
+const handleLogout = async (event?: MouseEvent): Promise<void> => {
+  event?.preventDefault()
+  await http.post('/auth/logout', null, { withCredentials: true })
+  clear()
+  loggedIn.value = false
   await router.push('/login')
 }
 
@@ -35,9 +56,9 @@ const goToMathematic = async (): Promise<void> => {
       <button 
         type="button" 
         class="auth-mosaic-nav__item auth-mosaic-nav__item--active"
-        @click="authed ? handleLogout() : handleLogin()"
+        @click="loggedIn ? handleLogout() : handleLogin()"
       >
-        {{ authed ? 'Logout' : 'Login' }}
+        {{ loggedIn ? 'Logout' : 'Login' }}
       </button>
     </div>
   </nav>
