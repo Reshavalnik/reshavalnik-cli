@@ -46,7 +46,6 @@ const goToHome = async (): Promise<void> => {
 const goToMathematic = async (event?: MouseEvent): Promise<void> => {
   event?.preventDefault()
   if (!loggedIn.value) {
-    await router.push('/login')
     return
   }
   await router.push('/student-mathematic')
@@ -57,7 +56,15 @@ const goToMathematic = async (event?: MouseEvent): Promise<void> => {
   <nav class="auth-mosaic-nav" aria-label="Top navigation">
     <div class="auth-mosaic-nav__pill">
       <button type="button" class="auth-mosaic-nav__item" @click="goToHome">Home</button>
-      <button type="button" class="auth-mosaic-nav__item" @click="goToMathematic">Mathematic</button>
+      <button
+        type="button"
+        class="auth-mosaic-nav__item"
+        :class="{ 'auth-mosaic-nav__item--disabled': !loggedIn }"
+        :disabled="!loggedIn"
+        @click="goToMathematic"
+      >
+        Mathematic
+      </button>
       <button 
         type="button" 
         class="auth-mosaic-nav__item auth-mosaic-nav__item--active"

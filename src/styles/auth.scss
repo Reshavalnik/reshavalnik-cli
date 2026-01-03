@@ -334,6 +334,11 @@
   cursor: pointer;
 }
 
+.auth-mosaic-nav__item--disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
 .auth-mosaic-nav__item--active {
   background: #151313;
   color: #fff;
