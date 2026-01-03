@@ -4,6 +4,8 @@ import type { GeneratedTaskResponse } from '../../services/tasks'
 const props = defineProps<{
   generatedTask: GeneratedTaskResponse
   selectedAnswers: Record<string, string>
+  lockedTaskIds: Record<string, boolean>
+  isSubmitting: boolean
 }>()
 
 const emit = defineEmits<{
@@ -44,6 +46,7 @@ const handleSelectAnswer = (taskId: string | undefined, optionKey: string): void
               :name="`task-${task.id}`"
               :value="optionKey"
               :checked="props.selectedAnswers[task.id || ''] === optionKey"
+              :disabled="(task.id && props.lockedTaskIds[task.id]) || props.isSubmitting"
               @change="handleSelectAnswer(task.id, optionKey)"
             />
             <span>{{ optionKey }}: {{ optionValue }}</span>

@@ -60,7 +60,7 @@ export class AuthService {
   }
 
   register(payload: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/signup`, payload);
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/signup-student`, payload);
   }
 
   me(): Observable<UserProfile> {

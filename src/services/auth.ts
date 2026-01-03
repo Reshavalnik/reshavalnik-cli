@@ -28,7 +28,7 @@ const signin = async (payload: SigninPayload): Promise<AuthResponse> => {
 }
 
 const signup = async (payload: SignupPayload): Promise<AuthResponse> => {
-  const response = await http.post<AuthResponse>('/auth/signup', payload)
+  const response = await http.post<AuthResponse>('/auth/signup-student', payload)
   return response.data
 }
 

@@ -375,6 +375,20 @@
   padding-left: 18px;
 }
 
+.services-result__retry {
+  margin-top: 12px;
+  border: 1px solid rgba(0, 0, 0, .12);
+  background: #fff;
+  color: #1f1f1f;
+  border-radius: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.services-result__retry:hover {
+  background: #f1f1ec;
+}
+
 .services-card__label {
   margin: 0 0 4px;
   font-size: 12px;

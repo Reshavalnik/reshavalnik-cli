@@ -48,8 +48,19 @@ const checkResult = ref<{
   solution?: string
   result?: boolean
 } | null>(null)
+const resultByTaskId = ref<Record<string, {
+  task?: string
+  options?: Record<string, string>
+  answer?: string
+  hint?: string
+  solution?: string
+  result?: boolean
+}>>({})
+const lockedTaskIds = ref<Record<string, boolean>>({})
+const lastResultTaskId = ref<string | null>(null)
 const selectedAnswers = ref<Record<string, string>>({})
 const activeTaskId = ref<string | null>(null)
+const isSubmitting = ref(false)
 
 const lessonEnabled = computed(() => selectedGrade.value !== null)
 const taskEnabled = computed(() => selectedSection.value !== null)
@@ -96,6 +107,9 @@ const selectGrade = (grade: GradeDto): void => {
   activeTaskId.value = null
   submitResult.value = null
   checkResult.value = null
+  resultByTaskId.value = {}
+  lockedTaskIds.value = {}
+  lastResultTaskId.value = null
   submitErrorMessage.value = null
 }
 
@@ -128,6 +142,9 @@ const selectSection = (section: SectionDto): void => {
   activeTaskId.value = null
   submitResult.value = null
   checkResult.value = null
+  resultByTaskId.value = {}
+  lockedTaskIds.value = {}
+  lastResultTaskId.value = null
   submitErrorMessage.value = null
 }
 
@@ -165,6 +182,9 @@ const handleGenerate = async (): Promise<void> => {
   submitErrorMessage.value = null
   submitResult.value = null
   checkResult.value = null
+  resultByTaskId.value = {}
+  lockedTaskIds.value = {}
+  lastResultTaskId.value = null
   selectedAnswers.value = {}
   activeTaskId.value = null
   selectedGeneratedTask.value = null
@@ -180,6 +200,9 @@ const handleGenerate = async (): Promise<void> => {
 }
 
 const selectAnswer = (taskId: string, optionKey: string): void => {
+  if (lockedTaskIds.value[taskId] || isSubmitting.value) {
+    return
+  }
   selectedAnswers.value = { ...selectedAnswers.value, [taskId]: optionKey }
   selectedGeneratedTask.value = { id: taskId }
   const generated = generatedTask.value as { id?: string } | null
@@ -188,6 +211,37 @@ const selectAnswer = (taskId: string, optionKey: string): void => {
 
 const updateTaskCount = (value: number): void => {
   taskCount.value = value
+}
+
+const buildCorrectAnswer = (result: {
+  result?: boolean
+  solution?: string
+}, selectedAnswer: string): string => {
+  if (result.result === true) {
+    return selectedAnswer
+  }
+  const solution = result.solution || ''
+  const match = solution.match(/(^|\s)(А|Б|В|Г)(\s|$)/)
+  if (match && match[2]) {
+    return match[2]
+  }
+  return 'Виж Решение'
+}
+
+const retryCheck = (): void => {
+  const taskId = lastResultTaskId.value
+  if (!taskId) {
+    return
+  }
+  const nextResults = { ...resultByTaskId.value }
+  delete nextResults[taskId]
+  resultByTaskId.value = nextResults
+  const nextLocks = { ...lockedTaskIds.value }
+  delete nextLocks[taskId]
+  lockedTaskIds.value = nextLocks
+  lastResultTaskId.value = null
+  checkResult.value = null
+  submitErrorMessage.value = null
 }
 
 const submitAnswer = async (): Promise<void> => {
@@ -210,8 +264,12 @@ const submitAnswer = async (): Promise<void> => {
     submitErrorMessage.value = 'Липсва examId.'
     return
   }
+  if (lockedTaskIds.value[currentTaskId] || isSubmitting.value) {
+    return
+  }
   submitErrorMessage.value = null
   checkResult.value = null
+  isSubmitting.value = true
   try {
     const result = await checkResultExam(currentTaskId, shortExamId, answer)
     submitResult.value = result
@@ -223,8 +281,13 @@ const submitAnswer = async (): Promise<void> => {
       solution?: string
       result?: boolean
     }
+    resultByTaskId.value = { ...resultByTaskId.value, [currentTaskId]: checkResult.value }
+    lockedTaskIds.value = { ...lockedTaskIds.value, [currentTaskId]: true }
+    lastResultTaskId.value = currentTaskId
   } catch {
     submitErrorMessage.value = 'Неуспешно изпращане на отговор.'
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -300,6 +363,8 @@ onMounted(async () => {
           v-if="generatedTask"
           :generated-task="generatedTask"
           :selected-answers="selectedAnswers"
+          :locked-task-ids="lockedTaskIds"
+          :is-submitting="isSubmitting"
           @select-answer="selectAnswer"
         />
 
@@ -307,7 +372,7 @@ onMounted(async () => {
           <button
             type="button"
             class="services-task-submit__button"
-            :disabled="!selectedGeneratedTask?.id || !selectedAnswers[selectedGeneratedTask.id]"
+            :disabled="!selectedGeneratedTask?.id || !selectedAnswers[selectedGeneratedTask.id] || lockedTaskIds[selectedGeneratedTask.id] || isSubmitting"
             @click="submitAnswer"
           >
             Изпрати отговор
@@ -316,7 +381,13 @@ onMounted(async () => {
         </div>
       </div>
 
-      <CheckResultCard v-if="checkResult" :result="checkResult" />
+      <CheckResultCard
+        v-if="checkResult"
+        :result="checkResult"
+        :correct-answer="buildCorrectAnswer(checkResult, selectedAnswers[lastResultTaskId || ''] || '')"
+        :show-retry="Boolean(lastResultTaskId)"
+        @retry="retryCheck"
+      />
     </section>
   </div>
 </template>
