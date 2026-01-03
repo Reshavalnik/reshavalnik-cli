@@ -32,7 +32,7 @@ const handleSubmit = async (): Promise<void> => {
     if (typeof token === 'string' && token.length > 0) {
       setAccessToken(token)
     }
-    await router.push('/student-mathematic')
+    await router.push('/student-mathematics')
   } catch {
     errorMessage.value = 'Authentication failed. Please try again.'
   }

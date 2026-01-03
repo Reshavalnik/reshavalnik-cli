@@ -7,9 +7,9 @@ import DevStatusOverlay from './components/DevStatusOverlay.vue'
 const isDev = import.meta.env.DEV
 const route = useRoute()
 const isAuthRoute = computed(() => route.path.startsWith('/auth') || route.path.startsWith('/login'))
-const isStudentMathematicRoute = computed(() => route.path.startsWith('/student-mathematic'))
+const isStudentMathematicsRoute = computed(() => route.path.startsWith('/student-mathematics'))
 const showTopNav = computed(() => !isAuthRoute.value)
-const showDevOverlay = computed(() => route.path.startsWith('/panel') && !isStudentMathematicRoute.value)
+const showDevOverlay = computed(() => route.path.startsWith('/panel') && !isStudentMathematicsRoute.value)
 </script>
 
 <template>
