@@ -8,12 +8,12 @@ const router = useRouter()
 const authed = computed(() => isAuthenticated())
 
 const handleLogin = async (): Promise<void> => {
-  await router.push('/auth')
+  await router.push('/login')
 }
 
 const handleLogout = async (): Promise<void> => {
   logout()
-  await router.push('/auth')
+  await router.push('/login')
 }
 </script>
 

@@ -34,7 +34,7 @@ http.interceptors.response.use(
         console.info('[dev][auth] token cleared after 401')
       }
       clear()
-      window.location.assign('/auth')
+      window.location.assign('/login')
     }
     return Promise.reject(error)
   },

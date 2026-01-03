@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { signin, signup, getGoogleLoginUrl, getFacebookLoginUrl } from '../services/auth'
-import { setAccessToken } from '../services/tokenStorage'
+import { signin, signup, getGoogleLoginUrl, getFacebookLoginUrl, logout } from '../services/auth'
+import { setAccessToken, isAuthenticated } from '../services/tokenStorage'
 
 type Mode = 'login' | 'register'
 
@@ -31,7 +31,7 @@ const handleSubmit = async (): Promise<void> => {
     if (typeof token === 'string' && token.length > 0) {
       setAccessToken(token)
     }
-    await router.push('/services')
+    await router.push('/student-mathematic')
   } catch {
     errorMessage.value = 'Authentication failed. Please try again.'
   }
@@ -54,11 +54,18 @@ const goToAuth = async (): Promise<void> => {
 }
 
 const goToServices = async (): Promise<void> => {
-  await router.push('/services')
+  await router.push('/student-mathematic')
 }
 
-const goToWork = async (): Promise<void> => {
-  await router.push('/panel')
+const isUserAuthenticated = computed(() => isAuthenticated())
+
+const handleAuthAction = async (): Promise<void> => {
+  if (isUserAuthenticated.value) {
+    logout()
+    await router.push('/login')
+  } else {
+    await router.push('/login')
+  }
 }
 </script>
 
@@ -175,10 +182,13 @@ const goToWork = async (): Promise<void> => {
       <nav class="auth-mosaic-nav" aria-label="Auth page navigation">
         <div class="auth-mosaic-nav__pill">
           <button type="button" class="auth-mosaic-nav__item" @click="goToAuth">Home</button>
-          <button type="button" class="auth-mosaic-nav__item" @click="goToServices">Services</button>
-          <button type="button" class="auth-mosaic-nav__item" @click="goToWork">Work</button>
-          <button type="button" class="auth-mosaic-nav__item auth-mosaic-nav__item--active" @click="goToAuth">
-            Login
+          <button type="button" class="auth-mosaic-nav__item" @click="goToServices">Mathematic</button>
+          <button 
+            type="button" 
+            class="auth-mosaic-nav__item auth-mosaic-nav__item--active" 
+            @click="handleAuthAction"
+          >
+            {{ isUserAuthenticated ? 'Logout' : 'Login' }}
           </button>
         </div>
       </nav>

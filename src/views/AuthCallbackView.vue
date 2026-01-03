@@ -30,23 +30,23 @@ onMounted(async () => {
     setAccessToken(token)
     try {
       await me()
-      await router.replace('/services')
+      await router.replace('/student-mathematic')
       return
     } catch {
       errorMessage.value = 'Authentication failed. Redirecting to login...'
       clear()
-      await router.replace('/auth')
+      await router.replace('/login')
       return
     }
   }
 
   try {
     await me()
-    await router.replace('/services')
+    await router.replace('/student-mathematic')
   } catch {
     errorMessage.value = 'Authentication failed. Redirecting to login...'
     clear()
-    await router.replace('/auth')
+    await router.replace('/login')
   }
 })
 </script>
