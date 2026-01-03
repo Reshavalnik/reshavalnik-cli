@@ -1,61 +1,9 @@
-:host {
-  display: block;
-}
-
-.top-nav {
+/* Position TopNav at top center when used globally */
+.auth-mosaic-nav:not(.auth-mosaic-wrap .auth-mosaic-nav) {
   position: fixed;
-  top: 0;
+  top: 16px;
   left: 50%;
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  padding: 12px;
   transform: translateX(-50%);
-}
-
-/* Frosted capsule bar */
-.nav-shell {
-  background: rgba(247, 247, 245, 0.7); /* frosted glass */
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid rgba(231, 231, 226, 0.5);
-  border-radius: 999px;
-  padding: 14px 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
-  width: max-content;
-}
-
-/* Links inline */
-.links {
-  display: flex;
-  gap: 16px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.links a {
-  position: relative;
-  text-decoration: none;
-  color: #222;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 999px;
-  transition: all 220ms ease;
-}
-
-/* Rounded highlight (hover/active) */
-.links a:hover,
-.links a.active {
-  background: rgba(231, 231, 226, 0.9); /* slightly darker than bar */
-  color: #000;
-  transform: translateY(-1px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* Focus ring */
-a:focus-visible {
-  outline: 2px solid #111;
-  outline-offset: 2px;
-  border-radius: 999px;
+  z-index: 1000;
+  justify-content: center;
 }
