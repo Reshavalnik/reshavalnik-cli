@@ -8,6 +8,10 @@ import { logAuthState, logRouteChange } from '../dev/runtimeDiagnostics'
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/',
+    redirect: '/auth',
+  },
+  {
     path: '/auth',
     name: 'auth',
     component: AuthView,
@@ -34,6 +38,10 @@ const routes: RouteRecordRaw[] = [
     component: StudentMathematics,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/auth',
+  }
 ]
 
 const router = createRouter({

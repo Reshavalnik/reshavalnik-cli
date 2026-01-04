@@ -70,11 +70,11 @@ const handleSignup = async (): Promise<void> => {
 }
 
 const loginWithGoogle = (): void => {
-  window.location.href = getGoogleLoginUrl()
+  window.location.assign(getGoogleLoginUrl())
 }
 
 const loginWithFaceBook = (): void => {
-  window.location.href = getFacebookLoginUrl()
+  window.location.assign(getFacebookLoginUrl())
 }
 
 const togglePasswordVisible = (): void => {
@@ -114,7 +114,17 @@ const togglePasswordVisible = (): void => {
 
         <div class="oauth">
           <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Google" @click="loginWithGoogle">
-            Continue with Google
+            <img
+              src="data:image/svg+xml;utf8,
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='20' height='20'>
+                  <path fill='%23EA4335' d='M24 9.5c3.54 0 6.7 1.22 9.18 3.22l6.84-6.84C35.9 2.36 30.28 0 24 0 14.64 0 6.6 5.38 2.7 13.22l7.98 6.2C12.56 13.16 17.86 9.5 24 9.5z'/>
+                  <path fill='%234285F4' d='M46.1 24.5c0-1.6-.14-3.14-.4-4.64H24v9h12.5c-.54 2.9-2.18 5.36-4.64 7.04l7.1 5.52C43.98 37.36 46.1 31.4 46.1 24.5z'/>
+                  <path fill='%23FBBC05' d='M10.68 28.42c-.48-1.44-.76-2.98-.76-4.42s.28-2.98.76-4.42l-7.98-6.2C.98 16.3 0 20.04 0 24s.98 7.7 2.7 10.62l7.98-6.2z'/>
+                  <path fill='%2334A853' d='M24 48c6.28 0 11.9-2.06 15.86-5.58l-7.1-5.52c-1.98 1.34-4.52 2.14-8.76 2.14-6.14 0-11.44-3.66-13.32-8.92l-7.98 6.2C6.6 42.62 14.64 48 24 48z'/>
+                </svg>"
+              alt=""
+            />
+            Google
           </button>
           <button class="btn btn-pill btn-outline" type="button" aria-label="Continue with Facebook" @click="loginWithFaceBook">
             <img

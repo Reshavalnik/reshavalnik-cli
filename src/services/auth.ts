@@ -16,7 +16,7 @@ export interface SignupPayload {
 
 export type AuthResponse = Record<string, unknown>
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 const buildSocialUrl = (provider: string): string => {
   const base = apiBaseUrl.replace(/\/+$/, '')
