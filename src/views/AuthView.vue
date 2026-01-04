@@ -87,7 +87,6 @@ const togglePasswordVisible = (): void => {
   <div class="auth-page" style="grid-template-columns: 1fr 2fr;">
     <section class="form-wrap">
       <div class="container">
-        <div class="brand-chip">Reshavalnik</div>
         <h1 class="title">{{ mode === 'register' ? 'Sign up account' : 'Welcome back' }}</h1>
         <p class="subtitle">
           {{ mode === 'register' ? 'Enter your personal data to create your account' : 'Log in with your account credentials' }}

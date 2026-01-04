@@ -18,6 +18,7 @@ import TaskTemplatePickerCard from '../components/services/TaskTemplatePickerCar
 import TaskGenerateCard from '../components/services/TaskGenerateCard.vue'
 import GeneratedTaskCard from '../components/services/GeneratedTaskCard.vue'
 import CheckResultCard from '../components/services/CheckResultCard.vue'
+import { roles } from '../services/auth'
 
 type Section = 'class' | 'lesson' | 'task'
 
@@ -66,6 +67,7 @@ const lessonEnabled = computed(() => selectedGrade.value !== null)
 const taskEnabled = computed(() => selectedSection.value !== null)
 const gradeName = computed(() => selectedGrade.value?.key ?? '')
 const sectionId = computed(() => selectedSection.value?.id ?? '')
+const isStudentRole = computed(() => roles.value.includes('STUDENT'))
 
 const loadGrades = async (): Promise<void> => {
   loadingGrades.value = true
@@ -191,7 +193,7 @@ const handleGenerate = async (): Promise<void> => {
   try {
     generatedTask.value = await generateTask({
       taskId: selectedTaskTemplate.value.id,
-      count: Math.max(1, Number(taskCount.value) || 1),
+      count: isStudentRole.value ? 1 : Math.max(1, Number(taskCount.value) || 1),
       students: [],
     })
   } catch {
@@ -365,11 +367,12 @@ onMounted(async () => {
         />
         <TaskGenerateCard
           :count="taskCount"
-          :can-generate="Boolean(selectedTaskTemplate)"
-          :error-message="taskErrorMessage"
-          @update:count="updateTaskCount"
-          @generate="handleGenerate"
-        />
+        :can-generate="Boolean(selectedTaskTemplate)"
+        :show-count="!isStudentRole"
+        :error-message="taskErrorMessage"
+        @update:count="updateTaskCount"
+        @generate="handleGenerate"
+      />
 
         <GeneratedTaskCard
           v-if="generatedTask"

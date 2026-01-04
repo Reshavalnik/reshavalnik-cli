@@ -39,8 +39,20 @@ const me = async (): Promise<AuthResponse> => {
 }
 
 const loggedIn = ref(false)
+const roles = ref<string[]>([])
 const checking = ref(false)
 let checkInFlight: Promise<boolean> | null = null
+
+const extractRoles = (response: AuthResponse): string[] => {
+  const candidate = (response as { roles?: unknown }).roles ?? (response as { user?: { roles?: unknown } }).user?.roles
+  if (Array.isArray(candidate)) {
+    return candidate.filter((role): role is string => typeof role === 'string')
+  }
+  if (typeof candidate === 'string' && candidate.length > 0) {
+    return [candidate]
+  }
+  return []
+}
 
 const checkSession = async (): Promise<boolean> => {
   if (checkInFlight) {
@@ -49,10 +61,12 @@ const checkSession = async (): Promise<boolean> => {
   checking.value = true
   checkInFlight = (async () => {
     try {
-      await me()
+      const response = await me()
       loggedIn.value = true
+      roles.value = extractRoles(response)
     } catch {
       loggedIn.value = false
+      roles.value = []
     } finally {
       checking.value = false
       checkInFlight = null
@@ -66,6 +80,7 @@ const resetSessionState = (): void => {
   checkInFlight = null
   checking.value = false
   loggedIn.value = false
+  roles.value = []
 }
 
 const logout = async (): Promise<void> => {
@@ -85,4 +100,4 @@ const getFacebookLoginUrl = (): string => {
   return buildSocialUrl('facebook')
 }
 
-export { signin, signup, checkSession, resetSessionState, loggedIn, checking, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }
+export { signin, signup, checkSession, resetSessionState, loggedIn, roles, checking, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }

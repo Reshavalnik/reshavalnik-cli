@@ -3,6 +3,7 @@ const props = defineProps<{
   count: number
   canGenerate: boolean
   errorMessage: string | null
+  showCount?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -23,7 +24,7 @@ const handleGenerate = (): void => {
 <template>
   <div>
     <div class="services-task-controls">
-      <label class="services-task-controls__field">
+      <label v-if="props.showCount !== false" class="services-task-controls__field">
         <span>Брой</span>
         <input :value="props.count" type="number" min="1" @input="handleInput" />
       </label>
