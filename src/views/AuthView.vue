@@ -10,6 +10,7 @@ type Mode = 'login' | 'register'
 const router = useRouter()
 const mode = ref<Mode>('login')
 const errorMessage = ref<string | null>(null)
+const isSubmitting = ref(false)
 
 const form = reactive({
   username: '',
@@ -24,10 +25,14 @@ const setMode = (next: Mode): void => {
   errorMessage.value = null
 }
 
-const handleSubmit = async (): Promise<void> => {
+const handleLogin = async (): Promise<void> => {
+  if (isSubmitting.value) {
+    return
+  }
   errorMessage.value = null
+  isSubmitting.value = true
   try {
-    const response = mode.value === 'login' ? await signin(form) : await signup(form)
+    const response = await signin(form)
     const token = (response as Record<string, unknown>).accessToken ?? (response as Record<string, unknown>).token
     if (typeof token === 'string' && token.length > 0) {
       setAccessToken(token)
@@ -35,6 +40,32 @@ const handleSubmit = async (): Promise<void> => {
     await router.push('/student-mathematics')
   } catch {
     errorMessage.value = 'Authentication failed. Please try again.'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const handleSignup = async (): Promise<void> => {
+  if (isSubmitting.value) {
+    return
+  }
+  errorMessage.value = null
+  if (!form.username || !form.email || !form.password) {
+    errorMessage.value = 'Please fill out all fields.'
+    return
+  }
+  isSubmitting.value = true
+  try {
+    const response = await signup(form)
+    const token = (response as Record<string, unknown>).accessToken ?? (response as Record<string, unknown>).token
+    if (typeof token === 'string' && token.length > 0) {
+      setAccessToken(token)
+    }
+    await router.push('/student-mathematics')
+  } catch {
+    errorMessage.value = 'Authentication failed. Please try again.'
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -99,7 +130,7 @@ const togglePasswordVisible = (): void => {
 
         <div v-if="errorMessage" class="error" role="alert">{{ errorMessage }}</div>
 
-        <form v-if="mode === 'register'" class="form" @submit.prevent="handleSubmit">
+        <form v-if="mode === 'register'" class="form" @submit.prevent="handleSignup">
           <label>
             <span>Username</span>
             <input v-model="form.username" type="text" placeholder="Username" autocomplete="username" />
@@ -126,7 +157,7 @@ const togglePasswordVisible = (): void => {
           </button>
         </form>
 
-        <form v-if="mode === 'login'" class="form" @submit.prevent="handleSubmit">
+        <form v-if="mode === 'login'" class="form" @submit.prevent="handleLogin">
           <label>
             <span>Username or email</span>
             <input v-model="form.username" type="text" placeholder="you@example.com" autocomplete="username" />
