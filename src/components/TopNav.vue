@@ -1,31 +1,10 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { loggedIn, refreshSession, resetSessionState } from '../services/auth'
+import { useRouter } from 'vue-router'
+import { loggedIn, resetSessionState } from '../services/auth'
 import http from '../services/http'
 import { clear } from '../services/tokenStorage'
 
 const router = useRouter()
-const route = useRoute()
-const syncAuthState = async (): Promise<void> => {
-  const isAuthRoute = route.path.startsWith('/auth') || route.path.startsWith('/login')
-  if (isAuthRoute) {
-    return
-  }
-  await refreshSession()
-}
-
-onMounted(() => {
-  void syncAuthState()
-})
-
-watch(
-  () => route.fullPath,
-  () => {
-    void syncAuthState()
-  },
-)
-
 const handleLogin = async (): Promise<void> => {
   await router.push('/login')
 }
@@ -39,8 +18,7 @@ const handleLogout = async (event?: MouseEvent): Promise<void> => {
 }
 
 const goToHome = async (): Promise<void> => {
-  const authHome = route.path.startsWith('/auth') || route.path.startsWith('/login')
-  await router.push(authHome ? '/auth' : '/login')
+  await router.push('/auth')
 }
 
 const goToMathematics = async (event?: MouseEvent): Promise<void> => {
@@ -65,8 +43,8 @@ const goToMathematics = async (event?: MouseEvent): Promise<void> => {
       >
         Mathematics
       </button>
-      <button 
-        type="button" 
+      <button
+        type="button"
         class="auth-mosaic-nav__item auth-mosaic-nav__item--active"
         @click="loggedIn ? handleLogout() : handleLogin()"
       >

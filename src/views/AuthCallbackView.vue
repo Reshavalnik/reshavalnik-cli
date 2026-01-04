@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { me } from '../services/auth'
 import { clear, setAccessToken } from '../services/tokenStorage'
 
 const router = useRouter()
@@ -28,26 +27,13 @@ onMounted(async () => {
 
   if (token) {
     setAccessToken(token)
-    try {
-      await me()
-      await router.replace('/student-mathematics')
-      return
-    } catch {
-      errorMessage.value = 'Authentication failed. Redirecting to login...'
-      clear()
-      await router.replace('/login')
-      return
-    }
+    await router.replace('/student-mathematics')
+    return
   }
 
-  try {
-    await me()
-    await router.replace('/student-mathematics')
-  } catch {
-    errorMessage.value = 'Authentication failed. Redirecting to login...'
-    clear()
-    await router.replace('/login')
-  }
+  errorMessage.value = 'Authentication failed. Redirecting to login...'
+  clear()
+  await router.replace('/login')
 })
 </script>
 

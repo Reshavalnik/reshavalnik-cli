@@ -39,46 +39,37 @@ const me = async (): Promise<AuthResponse> => {
 }
 
 const loggedIn = ref(false)
-let refreshInFlight: Promise<void> | null = null
+const checking = ref(false)
+let checkInFlight: Promise<boolean> | null = null
 
-const refreshSession = async (): Promise<void> => {
-  if (refreshInFlight) {
-    return refreshInFlight
+const checkSession = async (): Promise<boolean> => {
+  if (checkInFlight) {
+    return checkInFlight
   }
-  refreshInFlight = (async () => {
+  checking.value = true
+  checkInFlight = (async () => {
     try {
       await me()
       loggedIn.value = true
     } catch {
       loggedIn.value = false
     } finally {
-      refreshInFlight = null
+      checking.value = false
+      checkInFlight = null
     }
+    return loggedIn.value
   })()
-  return refreshInFlight
+  return checkInFlight
 }
 
 const resetSessionState = (): void => {
-  refreshInFlight = null
+  checkInFlight = null
+  checking.value = false
   loggedIn.value = false
 }
 
-const getSession = async (): Promise<boolean> => {
-  await refreshSession()
-  return loggedIn.value
-}
-
 const logout = async (): Promise<void> => {
-  // await http.post('/auth/logout', null, { withCredentials: true })
-  try {
-    await http.post('/auth/logout', null, { withCredentials: true })
-    console.log('logout request sent OK')
-  } catch (e) {
-    console.error('logout failed', e)
-    throw e
-  } finally {
-    console.log('logout finally')
-  }
+  await http.post('/auth/logout', null, { withCredentials: true })
   clear()
 }
 
@@ -94,4 +85,4 @@ const getFacebookLoginUrl = (): string => {
   return buildSocialUrl('facebook')
 }
 
-export { signin, signup, me, refreshSession, resetSessionState, loggedIn, getSession, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }
+export { signin, signup, checkSession, resetSessionState, loggedIn, checking, logout, getGoogleLoginUrl, getGithubLoginUrl, getFacebookLoginUrl }

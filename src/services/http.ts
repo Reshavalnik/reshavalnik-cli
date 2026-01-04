@@ -25,6 +25,7 @@ http.interceptors.response.use(
   },
   (error: AxiosError) => {
     const status = error.response?.status ?? null
+    const requestUrl = error.config?.url ?? ''
     if (import.meta.env.DEV) {
       setLastHttpStatus(status)
     }
@@ -34,7 +35,9 @@ http.interceptors.response.use(
         console.info('[dev][auth] token cleared after 401')
       }
       clear()
-      window.location.assign('/login')
+      if (!requestUrl.includes('/auth/me')) {
+        window.location.assign('/login')
+      }
     }
     return Promise.reject(error)
   },

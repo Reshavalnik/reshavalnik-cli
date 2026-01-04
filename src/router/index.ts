@@ -3,7 +3,7 @@ import AuthView from '../views/AuthView.vue'
 import AuthCallbackView from '../views/AuthCallbackView.vue'
 import PanelView from '../views/PanelView.vue'
 import StudentMathematics from '../views/StudentMathematics.vue'
-import { loggedIn, refreshSession } from '../services/auth'
+import { loggedIn, checkSession } from '../services/auth'
 import { logAuthState, logRouteChange } from '../dev/runtimeDiagnostics'
 
 const routes: RouteRecordRaw[] = [
@@ -45,6 +45,12 @@ const publicPaths = new Set(['/auth', '/auth/callback', '/login'])
 
 router.beforeEach(async (to) => {
   if (publicPaths.has(to.path)) {
+    if (to.path === '/login') {
+      await checkSession()
+      if (loggedIn.value) {
+        return { path: '/student-mathematics', replace: true }
+      }
+    }
     return true
   }
 
@@ -52,7 +58,7 @@ router.beforeEach(async (to) => {
     return true
   }
 
-  await refreshSession()
+  await checkSession()
   if (loggedIn.value) {
     return true
   }
