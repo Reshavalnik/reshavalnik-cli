@@ -18,6 +18,17 @@ const handleSelectAnswer = (taskId: string | undefined, optionKey: string): void
   }
   emit('selectAnswer', taskId, optionKey)
 }
+
+const resolveTaskImage = (task: Record<string, unknown> | null): string | null => {
+  if (!task) {
+    return null
+  }
+  const candidate = task.imageBase64 ?? task.img ?? task.imgBase64
+  if (typeof candidate !== 'string' || candidate.length === 0) {
+    return null
+  }
+  return candidate.startsWith('data:image') ? candidate : `data:image/png;base64,${candidate}`
+}
 </script>
 
 <template>
@@ -33,6 +44,12 @@ const handleSelectAnswer = (taskId: string | undefined, optionKey: string): void
 
     <div v-if="props.generatedTask.tasks?.length" class="services-task-list">
       <article v-for="task in props.generatedTask.tasks" :key="task.id" class="services-task">
+        <img
+          v-if="resolveTaskImage(task)"
+          class="services-task__image"
+          :src="resolveTaskImage(task) || ''"
+          alt=""
+        />
         <p class="services-task__text">{{ task.task }}</p>
         <div class="services-task__options">
           <label
