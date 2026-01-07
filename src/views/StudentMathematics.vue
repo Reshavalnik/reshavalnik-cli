@@ -310,87 +310,89 @@ onMounted(async () => {
     />
 
     <section class="services-content">
-      <h1 class="services-title">
-        {{ activeSection === 'class' ? 'Клас' : activeSection === 'lesson' ? 'Урок' : 'Задача' }}
-      </h1>
-      <p class="services-subtitle">Available offerings will appear here.</p>
+      <div class="services-content__inner">
+        <h1 class="services-title">
+          {{ activeSection === 'class' ? 'Клас' : activeSection === 'lesson' ? 'Урок' : 'Задача' }}
+        </h1>
+        <p class="services-subtitle">Available offerings will appear here.</p>
 
-      <GradePickerCard
-        v-if="activeSection === 'class'"
-        :grades="grades"
-        :selected-grade-key="selectedGrade?.key ?? null"
-        :loading="loadingGrades"
-        :error-message="errorMessage"
-        @select="selectGrade"
-      />
-
-      <div v-if="selectedGrade" class="services-card services-card--compact">
-        <p class="services-card__label">Избран клас: {{ selectedGrade.desc || selectedGrade.label }}</p>
-      </div>
-
-      <SectionPickerCard
-        v-if="activeSection === 'lesson'"
-        :sections="sectionsByGrade[gradeName] || []"
-        :selected-section-id="selectedSection?.id ?? null"
-        :loading="loadingSections"
-        :error-message="sectionsErrorMessage"
-        @select="selectSection"
-      />
-
-      <div v-if="selectedSection" class="services-card services-card--compact">
-        <p class="services-card__label">Избран урок: {{ selectedSection.sectionName }}</p>
-      </div>
-
-      <div v-if="activeSection === 'task'" class="services-card">
-        <div class="services-card__header">
-          <h2 class="services-card__title">Генериране</h2>
-        </div>
-        <TaskTemplatePickerCard
-          :tasks="tasksBySection[sectionId] || []"
-          :selected-task-id="selectedTaskTemplate?.id ?? null"
-          :loading="loadingTasks"
-          :error-message="tasksErrorMessage"
-          @select="selectTaskTemplate"
-        />
-        <TaskGenerateCard
-          :count="taskCount"
-        :can-generate="Boolean(selectedTaskTemplate)"
-        :show-count="!isStudentRole"
-        :error-message="taskErrorMessage"
-        @update:count="updateTaskCount"
-        @generate="handleGenerate"
-      />
-
-        <GeneratedTaskCard
-          v-if="generatedTask"
-          :generated-task="generatedTask"
-          :selected-answers="selectedAnswers"
-          :locked-task-ids="lockedTaskIds"
-          :is-submitting="isSubmitting"
-          @select-answer="selectAnswer"
+        <GradePickerCard
+          v-if="activeSection === 'class'"
+          :grades="grades"
+          :selected-grade-key="selectedGrade?.key ?? null"
+          :loading="loadingGrades"
+          :error-message="errorMessage"
+          @select="selectGrade"
         />
 
-        <div class="services-task-submit">
-          <button
-            type="button"
-            class="services-task-submit__button"
-            :disabled="!selectedGeneratedTask?.id || !selectedAnswers[selectedGeneratedTask.id] || lockedTaskIds[selectedGeneratedTask.id] || isSubmitting"
-            @click="submitAnswer"
-          >
-            Изпрати отговор
-          </button>
-          <p v-if="submitErrorMessage" class="services-card__error">{{ submitErrorMessage }}</p>
+        <div v-if="selectedGrade" class="services-card services-card--compact">
+          <p class="services-card__label">Избран клас: {{ selectedGrade.desc || selectedGrade.label }}</p>
         </div>
-      </div>
 
-      <CheckResultCard
-        v-if="checkResult"
-        :result="checkResult"
-        :correct-answer="buildCorrectAnswer(checkResult, selectedAnswers[lastResultTaskId || ''] || '')"
-        :show-retry="Boolean(lastResultTaskId)"
-        :solution-image-src="solutionImageSrc"
-        @retry="retryCheck"
-      />
+        <SectionPickerCard
+          v-if="activeSection === 'lesson'"
+          :sections="sectionsByGrade[gradeName] || []"
+          :selected-section-id="selectedSection?.id ?? null"
+          :loading="loadingSections"
+          :error-message="sectionsErrorMessage"
+          @select="selectSection"
+        />
+
+        <div v-if="selectedSection" class="services-card services-card--compact">
+          <p class="services-card__label">Избран урок: {{ selectedSection.sectionName }}</p>
+        </div>
+
+        <div v-if="activeSection === 'task'" class="services-card">
+          <div class="services-card__header">
+            <h2 class="services-card__title">Генериране</h2>
+          </div>
+          <TaskTemplatePickerCard
+            :tasks="tasksBySection[sectionId] || []"
+            :selected-task-id="selectedTaskTemplate?.id ?? null"
+            :loading="loadingTasks"
+            :error-message="tasksErrorMessage"
+            @select="selectTaskTemplate"
+          />
+          <TaskGenerateCard
+            :count="taskCount"
+          :can-generate="Boolean(selectedTaskTemplate)"
+          :show-count="!isStudentRole"
+          :error-message="taskErrorMessage"
+          @update:count="updateTaskCount"
+          @generate="handleGenerate"
+        />
+
+          <GeneratedTaskCard
+            v-if="generatedTask"
+            :generated-task="generatedTask"
+            :selected-answers="selectedAnswers"
+            :locked-task-ids="lockedTaskIds"
+            :is-submitting="isSubmitting"
+            @select-answer="selectAnswer"
+          />
+
+          <div class="services-task-submit">
+            <button
+              type="button"
+              class="services-task-submit__button"
+              :disabled="!selectedGeneratedTask?.id || !selectedAnswers[selectedGeneratedTask.id] || lockedTaskIds[selectedGeneratedTask.id] || isSubmitting"
+              @click="submitAnswer"
+            >
+              Изпрати отговор
+            </button>
+            <p v-if="submitErrorMessage" class="services-card__error">{{ submitErrorMessage }}</p>
+          </div>
+        </div>
+
+        <CheckResultCard
+          v-if="checkResult"
+          :result="checkResult"
+          :correct-answer="buildCorrectAnswer(checkResult, selectedAnswers[lastResultTaskId || ''] || '')"
+          :show-retry="Boolean(lastResultTaskId)"
+          :solution-image-src="solutionImageSrc"
+          @retry="retryCheck"
+        />
+      </div>
     </section>
   </div>
 </template>
