@@ -10,6 +10,7 @@ const props = defineProps<{
   }
   correctAnswer: string
   showRetry: boolean
+  solutionImageSrc?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -38,6 +39,12 @@ const handleRetry = (): void => {
       </div>
       <p v-if="props.result.hint"><strong>Помощ:</strong> {{ props.result.hint }}</p>
       <p v-if="props.result.solution"><strong>Решение:</strong> {{ props.result.solution }}</p>
+      <img
+        v-if="props.solutionImageSrc"
+        class="services-task__image"
+        :src="props.solutionImageSrc"
+        alt=""
+      />
     </div>
     <button v-if="props.showRetry" type="button" class="services-result__retry" @click="handleRetry">
       Опитай пак

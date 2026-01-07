@@ -56,6 +56,32 @@ const taskEnabled = computed(() => selectedSection.value !== null)
 const gradeName = computed(() => selectedGrade.value?.key ?? '')
 const sectionId = computed(() => selectedSection.value?.id ?? '')
 const isStudentRole = computed(() => roles.value.includes('STUDENT'))
+const solutionImageSrc = computed(() => {
+  const taskId = lastResultTaskId.value
+  if (!taskId || !generatedTask.value?.tasks?.length) {
+    return null
+  }
+  const task = generatedTask.value.tasks.find((item) => item.id === taskId) as Record<string, unknown> | undefined
+  if (!task) {
+    return null
+  }
+  const images = task.images
+  if (Array.isArray(images)) {
+    const match = images.find((image) => {
+      if (!image || typeof image !== 'object') {
+        return false
+      }
+      const kind = (image as { kind?: unknown }).kind
+      return typeof kind === 'string' && kind.toUpperCase() === 'SOLUTION'
+    }) as { base64?: unknown; mime?: unknown } | undefined
+    const base64 = match?.base64
+    if (typeof base64 === 'string' && base64.length > 0) {
+      const mime = typeof match?.mime === 'string' && match.mime.length > 0 ? match.mime : 'image/png'
+      return base64.startsWith('data:image') ? base64 : `data:${mime};base64,${base64}`
+    }
+  }
+  return null
+})
 
 const loadGrades = async (): Promise<void> => {
   loadingGrades.value = true
@@ -362,6 +388,7 @@ onMounted(async () => {
         :result="checkResult"
         :correct-answer="buildCorrectAnswer(checkResult, selectedAnswers[lastResultTaskId || ''] || '')"
         :show-retry="Boolean(lastResultTaskId)"
+        :solution-image-src="solutionImageSrc"
         @retry="retryCheck"
       />
     </section>

@@ -23,6 +23,22 @@ const resolveTaskImage = (task: Record<string, unknown> | null): string | null =
   if (!task) {
     return null
   }
+  const images = task.images
+  if (Array.isArray(images)) {
+    const match = images.find((image) => {
+      if (!image || typeof image !== 'object') {
+        return false
+      }
+      const kind = (image as { kind?: unknown }).kind
+      return typeof kind === 'string' && kind.toUpperCase() === 'TASK'
+    }) as { base64?: unknown; mime?: unknown } | undefined
+    const base64 = match?.base64
+    if (typeof base64 === 'string' && base64.length > 0) {
+      const mime = typeof match?.mime === 'string' && match.mime.length > 0 ? match.mime : 'image/png'
+      return base64.startsWith('data:image') ? base64 : `data:${mime};base64,${base64}`
+    }
+  }
+
   const candidate = task.imageBase64 ?? task.img ?? task.imgBase64
   if (typeof candidate !== 'string' || candidate.length === 0) {
     return null

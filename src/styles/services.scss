@@ -289,6 +289,16 @@
   background: #f7f7f5;
 }
 
+.services-result__image {
+  display: block;
+  max-width: 40%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, .08);
+  background: #f7f7f5;
+  margin-top: 10px;
+}
+
 @media (max-width: 768px) {
   .services-task__image {
     width: 90%;
