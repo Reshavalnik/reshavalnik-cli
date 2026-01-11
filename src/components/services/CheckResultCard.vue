@@ -10,7 +10,7 @@ const props = defineProps<{
   }
   correctAnswer: string
   showRetry: boolean
-  solutionImageSrc?: string | null
+  solutionImages?: string[] | null
 }>()
 
 const emit = defineEmits<{
@@ -40,9 +40,10 @@ const handleRetry = (): void => {
       <p v-if="props.result.hint"><strong>Помощ:</strong> {{ props.result.hint }}</p>
       <p v-if="props.result.solution"><strong>Решение:</strong> {{ props.result.solution }}</p>
       <img
-        v-if="props.solutionImageSrc"
+        v-for="(imageSrc, index) in props.solutionImages || []"
+        :key="`solution-image-${index}`"
         class="services-task__image"
-        :src="props.solutionImageSrc"
+        :src="imageSrc"
         alt=""
       />
     </div>

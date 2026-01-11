@@ -19,31 +19,15 @@ const handleSelectAnswer = (taskId: string | undefined, optionKey: string): void
   emit('selectAnswer', taskId, optionKey)
 }
 
-const resolveTaskImage = (task: Record<string, unknown> | null): string | null => {
+const resolveTaskImages = (task: Record<string, unknown> | null): string[] => {
   if (!task) {
-    return null
+    return []
   }
-  const images = task.images
-  if (Array.isArray(images)) {
-    const match = images.find((image) => {
-      if (!image || typeof image !== 'object') {
-        return false
-      }
-      const kind = (image as { kind?: unknown }).kind
-      return typeof kind === 'string' && kind.toUpperCase() === 'TASK'
-    }) as { base64?: unknown; mime?: unknown } | undefined
-    const base64 = match?.base64
-    if (typeof base64 === 'string' && base64.length > 0) {
-      const mime = typeof match?.mime === 'string' && match.mime.length > 0 ? match.mime : 'image/png'
-      return base64.startsWith('data:image') ? base64 : `data:${mime};base64,${base64}`
-    }
+  const taskImages = task.taskImages
+  if (Array.isArray(taskImages)) {
+    return taskImages.filter((image): image is string => typeof image === 'string' && image.length > 0)
   }
-
-  const candidate = task.imageBase64 ?? task.img ?? task.imgBase64
-  if (typeof candidate !== 'string' || candidate.length === 0) {
-    return null
-  }
-  return candidate.startsWith('data:image') ? candidate : `data:image/png;base64,${candidate}`
+  return []
 }
 </script>
 
@@ -61,9 +45,10 @@ const resolveTaskImage = (task: Record<string, unknown> | null): string | null =
     <div v-if="props.generatedTask.tasks?.length" class="services-task-list">
       <article v-for="task in props.generatedTask.tasks" :key="task.id" class="services-task">
         <img
-          v-if="resolveTaskImage(task)"
+          v-for="(imageSrc, index) in resolveTaskImages(task)"
+          :key="`${task.id || 'task'}-image-${index}`"
           class="services-task__image"
-          :src="resolveTaskImage(task) || ''"
+          :src="imageSrc"
           alt=""
         />
         <p class="services-task__text">{{ task.task }}</p>
