@@ -47,6 +47,7 @@ const {
   lockedTaskIds,
   lastResultTaskId,
   selectedAnswers,
+  freeAnswer,
   activeTaskId,
   isSubmitting,
 } = storeToRefs(store)
@@ -56,6 +57,45 @@ const taskEnabled = computed(() => selectedSection.value !== null)
 const gradeName = computed(() => selectedGrade.value?.key ?? '')
 const sectionId = computed(() => selectedSection.value?.id ?? '')
 const isStudentRole = computed(() => roles.value.includes('STUDENT'))
+const resolveTaskHasOptions = (task: Record<string, unknown> | null | undefined): boolean => {
+  const options = task?.options as Record<string, string> | null | undefined
+  return Boolean(options && Object.keys(options).length > 0)
+}
+const activeTask = computed(() => {
+  if (!generatedTask.value?.tasks?.length) {
+    return null
+  }
+  const selectedId = selectedGeneratedTask.value?.id
+  if (selectedId) {
+    return generatedTask.value.tasks.find((task) => task.id === selectedId) ?? null
+  }
+  return generatedTask.value.tasks[0] ?? null
+})
+const activeTaskHasOptions = computed(() => resolveTaskHasOptions(activeTask.value))
+const lastResultAnswer = computed(() => {
+  const taskId = lastResultTaskId.value
+  if (!taskId) {
+    return ''
+  }
+  const task = generatedTask.value?.tasks?.find((item) => item.id === taskId)
+  if (resolveTaskHasOptions(task)) {
+    return selectedAnswers.value[taskId] || ''
+  }
+  return freeAnswer.value.trim()
+})
+const isSubmitDisabled = computed(() => {
+  const task = activeTask.value
+  if (!task?.id) {
+    return true
+  }
+  if (lockedTaskIds.value[task.id] || isSubmitting.value) {
+    return true
+  }
+  if (activeTaskHasOptions.value) {
+    return !selectedGeneratedTask.value?.id || !selectedAnswers.value[task.id]
+  }
+  return freeAnswer.value.trim().length === 0
+})
 const solutionImages = computed(() => {
   const taskId = lastResultTaskId.value
   if (!taskId || !generatedTask.value?.tasks?.length) {
@@ -109,6 +149,7 @@ const selectGrade = (grade: GradeDto): void => {
   activeSection.value = 'class'
   generatedTask.value = null
   selectedAnswers.value = {}
+  freeAnswer.value = ''
   activeTaskId.value = null
   submitResult.value = null
   checkResult.value = null
@@ -144,6 +185,7 @@ const selectSection = (section: SectionDto): void => {
   selectedGeneratedTask.value = null
   generatedTask.value = null
   selectedAnswers.value = {}
+  freeAnswer.value = ''
   activeTaskId.value = null
   submitResult.value = null
   checkResult.value = null
@@ -191,6 +233,7 @@ const handleGenerate = async (): Promise<void> => {
   lockedTaskIds.value = {}
   lastResultTaskId.value = null
   selectedAnswers.value = {}
+  freeAnswer.value = ''
   activeTaskId.value = null
   selectedGeneratedTask.value = null
   try {
@@ -209,6 +252,17 @@ const selectAnswer = (taskId: string, optionKey: string): void => {
     return
   }
   selectedAnswers.value = { ...selectedAnswers.value, [taskId]: optionKey }
+  freeAnswer.value = ''
+  selectedGeneratedTask.value = { id: taskId }
+  const generated = generatedTask.value as { id?: string } | null
+  activeTaskId.value = generated?.id ?? null
+}
+
+const updateFreeAnswer = (taskId: string | undefined, value: string): void => {
+  if (!taskId || lockedTaskIds.value[taskId] || isSubmitting.value) {
+    return
+  }
+  freeAnswer.value = value
   selectedGeneratedTask.value = { id: taskId }
   const generated = generatedTask.value as { id?: string } | null
   activeTaskId.value = generated?.id ?? null
@@ -248,7 +302,10 @@ const submitAnswer = async (): Promise<void> => {
     submitErrorMessage.value = 'Липсва идентификатор на задача.'
     return
   }
-  const answer = selectedAnswers.value[currentTaskId]
+  const hasOptions = resolveTaskHasOptions(
+    generatedTask.value?.tasks?.find((task) => task.id === currentTaskId),
+  )
+  const answer = hasOptions ? selectedAnswers.value[currentTaskId] : freeAnswer.value.trim()
   if (!answer) {
     return
   }
@@ -355,16 +412,18 @@ onMounted(async () => {
             v-if="generatedTask"
             :generated-task="generatedTask"
             :selected-answers="selectedAnswers"
+            :free-answer="freeAnswer"
             :locked-task-ids="lockedTaskIds"
             :is-submitting="isSubmitting"
             @select-answer="selectAnswer"
+            @update-free-answer="updateFreeAnswer"
           />
 
           <div class="services-task-submit">
             <button
               type="button"
               class="services-task-submit__button"
-              :disabled="!selectedGeneratedTask?.id || !selectedAnswers[selectedGeneratedTask.id] || lockedTaskIds[selectedGeneratedTask.id] || isSubmitting"
+              :disabled="isSubmitDisabled"
               @click="submitAnswer"
             >
               Изпрати отговор
@@ -376,7 +435,7 @@ onMounted(async () => {
       <CheckResultCard
         v-if="checkResult"
         :result="checkResult"
-        :correct-answer="buildCorrectAnswer(checkResult, selectedAnswers[lastResultTaskId || ''] || '')"
+        :correct-answer="buildCorrectAnswer(checkResult, lastResultAnswer)"
         :show-retry="Boolean(lastResultTaskId)"
         :solution-images="solutionImages"
         @retry="retryCheck"

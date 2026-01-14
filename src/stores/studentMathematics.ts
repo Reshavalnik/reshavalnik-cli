@@ -43,6 +43,7 @@ export const useStudentMathematicsStore = defineStore('studentMathematics', () =
   const lockedTaskIds = ref<Record<string, boolean>>({})
   const lastResultTaskId = ref<string | null>(null)
   const selectedAnswers = ref<Record<string, string>>({})
+  const freeAnswer = ref('')
   const activeTaskId = ref<string | null>(null)
   const isSubmitting = ref(false)
 
@@ -56,6 +57,7 @@ export const useStudentMathematicsStore = defineStore('studentMathematics', () =
     selectedGeneratedTask.value = null
     generatedTask.value = null
     selectedAnswers.value = {}
+    freeAnswer.value = ''
     activeTaskId.value = null
     submitResult.value = null
     checkResult.value = null
@@ -100,6 +102,7 @@ export const useStudentMathematicsStore = defineStore('studentMathematics', () =
     lockedTaskIds,
     lastResultTaskId,
     selectedAnswers,
+    freeAnswer,
     activeTaskId,
     isSubmitting,
     hasResult,
