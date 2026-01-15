@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { renderMath } from '../../utils/mathRenderer'
+
 const props = defineProps<{
   result: {
     task?: string
@@ -28,17 +30,20 @@ const handleRetry = (): void => {
       {{ props.result.result ? 'ВЯРНО' : 'ГРЕШНО' }}
     </div>
     <div class="services-result__details">
-      <p><strong>Задача:</strong> {{ props.result.task }}</p>
+      <p><strong>Задача:</strong> <span v-html="renderMath(props.result.task || '')"></span></p>
       <p><strong>Избран отговор:</strong> {{ props.result.answer }}</p>
       <p><strong>Верен отговор:</strong> {{ props.correctAnswer }}</p>
       <div v-if="props.result.options" class="services-result__options">
         <strong>Възможни отговори:</strong>
         <ul>
-          <li v-for="(value, key) in props.result.options" :key="key">{{ key }}: {{ value }}</li>
+          <li v-for="(value, key) in props.result.options" :key="key">
+            <span>{{ key }}:</span>
+            <span v-html="renderMath(value)"></span>
+          </li>
         </ul>
       </div>
-      <p v-if="props.result.hint"><strong>Помощ:</strong> {{ props.result.hint }}</p>
-      <p v-if="props.result.solution"><strong>Решение:</strong> {{ props.result.solution }}</p>
+      <p v-if="props.result.hint"><strong>Помощ:</strong> <span v-html="renderMath(props.result.hint)"></span></p>
+      <p v-if="props.result.solution"><strong>Решение:</strong> <span v-html="renderMath(props.result.solution)"></span></p>
       <img
         v-for="(imageSrc, index) in props.solutionImages || []"
         :key="`solution-image-${index}`"
