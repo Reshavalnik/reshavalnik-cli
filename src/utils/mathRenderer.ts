@@ -56,6 +56,9 @@ type Node = {
   raw?: string
 }
 
+const ASCII_TOKEN_EDGE = /[A-Za-z0-9()[\]]/
+const DATE_PATTERN = /\b\d{1,4}\/\d{1,2}\/\d{1,2}\b/
+
 const normalizeInput = (input: string): string => {
   return input
     .replace(/\r\n/g, '\n')
@@ -74,6 +77,27 @@ const isDigit = (char: string): boolean => {
 const tokenize = (input: string): Token[] => {
   const tokens: Token[] = []
   let index = 0
+  const hasDatePattern = DATE_PATTERN.test(input)
+
+  const getPrevNonSpace = (position: number): string => {
+    for (let i = position - 1; i >= 0; i -= 1) {
+      const char = input[i] ?? ''
+      if (!/\s/.test(char)) {
+        return char
+      }
+    }
+    return ''
+  }
+
+  const getNextNonSpace = (position: number): string => {
+    for (let i = position + 1; i < input.length; i += 1) {
+      const char = input[i] ?? ''
+      if (!/\s/.test(char)) {
+        return char
+      }
+    }
+    return ''
+  }
 
   while (index < input.length) {
     const char = input[index] ?? ''
@@ -96,7 +120,32 @@ const tokenize = (input: string): Token[] => {
     }
 
     if (char === '/') {
-      tokens.push({ type: 'operator', value: '/' })
+      const prevChar = getPrevNonSpace(index)
+      const nextChar = getNextNonSpace(index)
+      const around = input.slice(Math.max(0, index - 12), Math.min(input.length, index + 12))
+      const isUrlLike = around.includes('://') || around.includes('http') || around.includes('www.')
+      const isPathLike = prevChar === ':' || prevChar === '/' || nextChar === '/'
+      const isDateLike = hasDatePattern && /\d/.test(prevChar) && /\d/.test(nextChar)
+      const isAsciiEdge = ASCII_TOKEN_EDGE.test(prevChar) && ASCII_TOKEN_EDGE.test(nextChar)
+      const isLeadingSlash = !prevChar && Boolean(nextChar)
+      if (isUrlLike || isPathLike || isDateLike || !isAsciiEdge || isLeadingSlash) {
+        tokens.push({ type: 'symbol', value: '/' })
+      } else {
+        tokens.push({ type: 'operator', value: '/' })
+      }
+      index += 1
+      continue
+    }
+
+    if (char === '.') {
+      const prevChar = getPrevNonSpace(index)
+      const nextChar = getNextNonSpace(index)
+      const isAsciiEdge = ASCII_TOKEN_EDGE.test(prevChar) && ASCII_TOKEN_EDGE.test(nextChar)
+      if (isAsciiEdge) {
+        tokens.push({ type: 'operator', value: '.' })
+      } else {
+        tokens.push({ type: 'symbol', value: '.' })
+      }
       index += 1
       continue
     }
@@ -200,7 +249,7 @@ class Parser {
   parse(): Node {
     const parts: Node[] = []
     while (!this.is('eof')) {
-      parts.push(this.parseRelation())
+      parts.push(this.parseRelation(true))
       if (this.is('eof')) {
         break
       }
@@ -211,22 +260,39 @@ class Parser {
     return asNode(parts.map((part) => part.latex).join(' '), 'other')
   }
 
-  private parseRelation(): Node {
-    let left = this.parseFraction()
+  private parseRelation(allowTopLevelOps: boolean): Node {
+    let left = this.parseFraction(allowTopLevelOps)
     while (this.is('operator', '>=')) {
       this.advance()
-      const right = this.parseFraction()
+      const right = this.parseFraction(allowTopLevelOps)
       left = asNode(`${left.latex} \\ge ${right.latex}`, 'other')
     }
     return left
   }
 
-  private parseFraction(): Node {
+  private parseFraction(allowTopLevelOps: boolean): Node {
+    let left = this.parseMultiplication(allowTopLevelOps)
+    while (allowTopLevelOps && this.is('operator', '/')) {
+      this.advance()
+      const right = this.parseMultiplication(allowTopLevelOps)
+      if (!left.latex || !right.latex) {
+        return left
+      }
+      left = asNode(`\\frac{${left.latex}}{${right.latex}}`, 'other')
+    }
+    return left
+  }
+
+  private parseMultiplication(allowTopLevelOps: boolean): Node {
     let left = this.parsePower()
-    while (this.is('operator', '/')) {
+    while (allowTopLevelOps && this.is('operator', '.')) {
       this.advance()
       const right = this.parsePower()
-      left = asNode(`\\frac{${left.latex}}{${right.latex}}`, 'other')
+      if (!right.latex) {
+        left = asNode(`${left.latex}.`, 'other')
+        break
+      }
+      left = asNode(`${left.latex} \\cdot ${right.latex}`, 'other')
     }
     return left
   }
@@ -304,11 +370,11 @@ class Parser {
       return args
     }
 
-    args.push(this.parseRelation())
+    args.push(this.parseRelation(false))
 
     while (allowComma && this.is('comma')) {
       this.advance()
-      args.push(this.parseRelation())
+      args.push(this.parseRelation(false))
     }
 
     if (this.is(closeType)) {
