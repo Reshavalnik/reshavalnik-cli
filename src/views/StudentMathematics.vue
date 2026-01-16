@@ -330,6 +330,7 @@ const submitAnswer = async (): Promise<void> => {
       hint?: string
       solution?: string
       result?: boolean
+      mathDialect?: 'legacy' | 'wizu5'
     }
     resultByTaskId.value = { ...resultByTaskId.value, [currentTaskId]: checkResult.value }
     lockedTaskIds.value = { ...lockedTaskIds.value, [currentTaskId]: true }

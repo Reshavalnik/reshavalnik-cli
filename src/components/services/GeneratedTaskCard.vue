@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import type { GeneratedTaskResponse } from '../../services/tasks'
-import { renderRichText } from '../../utils/mathRenderer'
+import { renderMathText } from '../../utils/mathRenderer'
 
 const props = defineProps<{
   generatedTask: GeneratedTaskResponse
@@ -18,6 +18,7 @@ const emit = defineEmits<{
   (e: 'updateFreeAnswer', taskId: string, value: string): void
 }>()
 
+const useWizu5 = computed(() => props.generatedTask?.mathDialect === 'wizu5')
 const freeAnswerRefs = ref(new Map<string, HTMLTextAreaElement>())
 const freeAnswerViewByTask = ref<Record<string, 'editor' | 'preview'>>({})
 
@@ -149,7 +150,7 @@ onMounted(() => {
           :src="imageSrc"
           alt=""
         />
-        <p class="services-task__text" v-html="task.task ? renderRichText(task.task) : ''"></p>
+        <p class="services-task__text" v-html="task.task ? renderMathText(task.task, { wizu5: useWizu5 }) : ''"></p>
         <div v-if="taskHasOptions(task)" class="services-task__options">
           <label
             v-for="(optionValue, optionKey) in task.options"
@@ -167,7 +168,7 @@ onMounted(() => {
             />
             <span>
               <span>{{ optionKey }}:</span>
-              <span v-html="renderRichText(optionValue)"></span>
+              <span v-html="renderMathText(optionValue, { wizu5: useWizu5 })"></span>
             </span>
           </label>
         </div>
@@ -221,7 +222,7 @@ onMounted(() => {
         </div>
         <p v-if="task.hint" class="services-task__hint">
           <span class="services-task__hint-label">Указание:</span>
-          <span v-html="renderRichText(task.hint)"></span>
+          <span v-html="renderMathText(task.hint, { wizu5: useWizu5 })"></span>
         </p>
       </article>
     </div>

@@ -1,5 +1,6 @@
 import katex from 'katex'
 import DOMPurify from 'dompurify'
+import { renderWizu5Html } from './math/wizu5'
 
 const GREEK_LETTERS = new Set([
   'alpha',
@@ -720,4 +721,17 @@ export const renderMath = (text: string): string => {
   } catch {
     return DOMPurify.sanitize(raw)
   }
+}
+
+export const renderMathText = (text: string, options?: { wizu5?: boolean }): string => {
+  const raw = text ?? ''
+  if (!raw) {
+    return ''
+  }
+  const useWizu5 = options?.wizu5 || raw.includes('DL(') || raw.includes('**')
+  if (useWizu5) {
+    const html = renderWizu5Html(raw)
+    return DOMPurify.sanitize(html)
+  }
+  return renderRichText(raw)
 }

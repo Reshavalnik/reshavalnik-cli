@@ -591,3 +591,36 @@
   margin-top: 0 !important;
   transform: none !important;
 }
+
+.math-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.math-frac__top,
+.math-frac__bottom {
+  display: block;
+  padding: 0 2px;
+  line-height: 1.1;
+}
+
+.math-frac__bar {
+  display: block;
+  width: 100%;
+  border-top: 1px solid currentColor;
+  margin: 1px 0;
+}
+
+.math-sup {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.math-sup__exp {
+  font-size: 0.75em;
+  line-height: 1;
+  margin-left: 2px;
+}

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { renderRichText } from '../../utils/mathRenderer'
+import { computed } from 'vue'
+import { renderMathText } from '../../utils/mathRenderer'
 
 const props = defineProps<{
   result: {
@@ -9,6 +10,7 @@ const props = defineProps<{
     hint?: string
     solution?: string
     result?: boolean
+    mathDialect?: 'legacy' | 'wizu5'
   }
   correctAnswer: string
   showRetry: boolean
@@ -22,6 +24,8 @@ const emit = defineEmits<{
 const handleRetry = (): void => {
   emit('retry')
 }
+
+const useWizu5 = computed(() => props.result.mathDialect === 'wizu5')
 </script>
 
 <template>
@@ -30,7 +34,7 @@ const handleRetry = (): void => {
       {{ props.result.result ? 'ВЯРНО' : 'ГРЕШНО' }}
     </div>
     <div class="services-result__details">
-      <p><strong>Задача:</strong> <span v-html="renderRichText(props.result.task || '')"></span></p>
+      <p><strong>Задача:</strong> <span v-html="renderMathText(props.result.task || '', { wizu5: useWizu5 })"></span></p>
       <p><strong>Избран отговор:</strong> {{ props.result.answer }}</p>
       <p><strong>Верен отговор:</strong> {{ props.correctAnswer }}</p>
       <div v-if="props.result.options" class="services-result__options">
@@ -38,12 +42,12 @@ const handleRetry = (): void => {
         <ul>
           <li v-for="(value, key) in props.result.options" :key="key">
             <span>{{ key }}:</span>
-            <span v-html="renderRichText(value)"></span>
+            <span v-html="renderMathText(value, { wizu5: useWizu5 })"></span>
           </li>
         </ul>
       </div>
-      <p v-if="props.result.hint"><strong>Помощ:</strong> <span v-html="renderRichText(props.result.hint)"></span></p>
-      <p v-if="props.result.solution"><strong>Решение:</strong> <span v-html="renderRichText(props.result.solution)"></span></p>
+      <p v-if="props.result.hint"><strong>Помощ:</strong> <span v-html="renderMathText(props.result.hint, { wizu5: useWizu5 })"></span></p>
+      <p v-if="props.result.solution"><strong>Решение:</strong> <span v-html="renderMathText(props.result.solution, { wizu5: useWizu5 })"></span></p>
       <img
         v-for="(imageSrc, index) in props.solutionImages || []"
         :key="`solution-image-${index}`"

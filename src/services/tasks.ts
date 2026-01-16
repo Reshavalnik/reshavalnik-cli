@@ -18,6 +18,7 @@ export interface GeneratedTaskRequestModel {
 }
 
 export interface GeneratedTaskResponse {
+  mathDialect?: 'legacy' | 'wizu5'
   grade?: {
     level?: number
     desc?: string
