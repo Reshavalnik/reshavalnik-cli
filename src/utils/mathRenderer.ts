@@ -57,13 +57,24 @@ type Node = {
 }
 
 const ASCII_TOKEN_EDGE = /[A-Za-z0-9()[\]]/
+const ASCII_MATH_CHAR = /[0-9A-Za-z().^*/+\-]/
 const DATE_PATTERN = /\b\d{1,4}\/\d{1,2}\/\d{1,2}\b/
+const DATE_SEGMENT_PATTERN = /^\d{1,4}\/\d{1,2}\/\d{1,2}$/
 
 const normalizeInput = (input: string): string => {
   return input
     .replace(/\r\n/g, '\n')
     .replace(/\n/g, '\\\\')
     .replace(/[‘’]/g, "'")
+}
+
+const escapeHtml = (input: string): string => {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 const isLetter = (char: string): boolean => {
@@ -238,6 +249,19 @@ const wrapIfNeeded = (latex: string): string => {
   return shouldGroup(latex) ? `{${latex}}` : latex
 }
 
+const isCompoundLatex = (latex: string): boolean => {
+  if (/\s/.test(latex)) {
+    return true
+  }
+  if (/[+\-]/.test(latex)) {
+    return true
+  }
+  if (/\\frac|\\cdot|\\ge|\\le|\\ne/.test(latex)) {
+    return true
+  }
+  return false
+}
+
 class Parser {
   private tokens: Token[]
   private index = 0
@@ -393,6 +417,9 @@ class Parser {
       const first = args[0]
       if (!first) {
         return asNode('()', 'other')
+      }
+      if (!isCompoundLatex(first.latex)) {
+        return first
       }
       return asNode(`\\left(${first.latex}\\right)`, 'other')
     }
@@ -596,6 +623,89 @@ const convertCustomMarkers = (input: string): string => {
   const tokens = tokenize(normalized)
   const parser = new Parser(tokens)
   return parser.parse().latex
+}
+
+const isMathSegment = (value: string): boolean => {
+  if (!/[0-9A-Za-z]/.test(value)) {
+    return false
+  }
+  if (value.includes('http://') || value.includes('https://') || value.includes('www.')) {
+    return false
+  }
+  const compact = value.replace(/\s+/g, '')
+  if (DATE_SEGMENT_PATTERN.test(compact)) {
+    return false
+  }
+  if (/\*\*/.test(value)) {
+    return true
+  }
+  if (/[0-9A-Za-z)]\s*\/\s*[0-9A-Za-z(]/.test(value)) {
+    return true
+  }
+  if (/[0-9A-Za-z)]\s*\.\s*[0-9A-Za-z(]/.test(value)) {
+    return true
+  }
+  if (/[0-9A-Za-z)]\s*\^\s*[0-9A-Za-z(]/.test(value)) {
+    return true
+  }
+  return false
+}
+
+const renderMathSegment = (segment: string): string => {
+  const latex = convertCustomMarkers(segment)
+  return katex.renderToString(latex, { throwOnError: false, displayMode: false })
+}
+
+export const renderRichText = (input: string): string => {
+  const raw = input ?? ''
+  if (!raw) {
+    return ''
+  }
+  let result = ''
+  let index = 0
+
+  while (index < raw.length) {
+    const char = raw[index] ?? ''
+    if (!ASCII_MATH_CHAR.test(char)) {
+      result += escapeHtml(char)
+      index += 1
+      continue
+    }
+
+    let end = index
+    while (end < raw.length) {
+      const nextChar = raw[end] ?? ''
+      if (nextChar === '\n') {
+        break
+      }
+      if (ASCII_MATH_CHAR.test(nextChar) || /\s/.test(nextChar)) {
+        end += 1
+        continue
+      }
+      break
+    }
+
+    const segment = raw.slice(index, end)
+    const leading = segment.match(/^\s+/)?.[0] ?? ''
+    const trailing = segment.match(/\s+$/)?.[0] ?? ''
+    const core = segment.slice(leading.length, segment.length - trailing.length)
+    if (leading) {
+      result += escapeHtml(leading)
+    }
+    if (core) {
+      if (isMathSegment(core)) {
+        result += renderMathSegment(core)
+      } else {
+        result += escapeHtml(core)
+      }
+    }
+    if (trailing) {
+      result += escapeHtml(trailing)
+    }
+    index = end
+  }
+
+  return DOMPurify.sanitize(result)
 }
 
 export const renderMath = (text: string): string => {

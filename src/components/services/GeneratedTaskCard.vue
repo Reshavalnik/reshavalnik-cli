@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import type { GeneratedTaskResponse } from '../../services/tasks'
-import { renderMath } from '../../utils/mathRenderer'
+import { renderRichText } from '../../utils/mathRenderer'
 
 const props = defineProps<{
   generatedTask: GeneratedTaskResponse
@@ -149,7 +149,7 @@ onMounted(() => {
           :src="imageSrc"
           alt=""
         />
-        <p class="services-task__text" v-html="task.task ? renderMath(task.task) : ''"></p>
+        <p class="services-task__text" v-html="task.task ? renderRichText(task.task) : ''"></p>
         <div v-if="taskHasOptions(task)" class="services-task__options">
           <label
             v-for="(optionValue, optionKey) in task.options"
@@ -167,7 +167,7 @@ onMounted(() => {
             />
             <span>
               <span>{{ optionKey }}:</span>
-              <span v-html="renderMath(optionValue)"></span>
+              <span v-html="renderRichText(optionValue)"></span>
             </span>
           </label>
         </div>
@@ -221,7 +221,7 @@ onMounted(() => {
         </div>
         <p v-if="task.hint" class="services-task__hint">
           <span class="services-task__hint-label">Указание:</span>
-          <span v-html="renderMath(task.hint)"></span>
+          <span v-html="renderRichText(task.hint)"></span>
         </p>
       </article>
     </div>
