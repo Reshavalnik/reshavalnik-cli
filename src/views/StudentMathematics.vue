@@ -19,6 +19,7 @@ import TaskGenerateCard from '../components/services/TaskGenerateCard.vue'
 import GeneratedTaskCard from '../components/services/GeneratedTaskCard.vue'
 import CheckResultCard from '../components/services/CheckResultCard.vue'
 import { roles } from '../services/auth'
+import { normalizeImagePath } from '../utils/paths'
 import { useStudentMathematicsStore, type Section } from '../stores/studentMathematics'
 
 const store = useStudentMathematicsStore()
@@ -107,7 +108,9 @@ const solutionImages = computed(() => {
   }
   const images = task.solutionImages
   if (Array.isArray(images)) {
-    return images.filter((image): image is string => typeof image === 'string' && image.length > 0)
+    return images
+      .filter((image): image is string => typeof image === 'string' && image.length > 0)
+      .map((image) => normalizeImagePath(image))
   }
   return []
 })

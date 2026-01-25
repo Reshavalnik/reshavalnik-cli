@@ -3,7 +3,9 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import type { GeneratedTaskResponse } from '../../services/tasks'
-import { renderMathText } from '../../utils/mathRenderer'
+import MathJaxText from '../MathJaxText.vue'
+import { normalizeImagePath } from '../../utils/paths'
+import { normalizeLatexText, normalizeOptionValue } from '../../utils/latexNormalize'
 
 const props = defineProps<{
   generatedTask: GeneratedTaskResponse
@@ -18,7 +20,6 @@ const emit = defineEmits<{
   (e: 'updateFreeAnswer', taskId: string, value: string): void
 }>()
 
-const useWizu5 = computed(() => props.generatedTask?.mathDialect === 'wizu5')
 const freeAnswerRefs = ref(new Map<string, HTMLTextAreaElement>())
 const freeAnswerViewByTask = ref<Record<string, 'editor' | 'preview'>>({})
 
@@ -94,7 +95,9 @@ const resolveTaskImages = (task: Record<string, unknown> | null): string[] => {
   }
   const taskImages = task.taskImages
   if (Array.isArray(taskImages)) {
-    return taskImages.filter((image): image is string => typeof image === 'string' && image.length > 0)
+    return taskImages
+      .filter((image): image is string => typeof image === 'string' && image.length > 0)
+      .map((image) => normalizeImagePath(image))
   }
   return []
 }
@@ -102,6 +105,10 @@ const resolveTaskImages = (task: Record<string, unknown> | null): string[] => {
 const taskHasOptions = (task: Record<string, unknown> | null | undefined): boolean => {
   const options = task?.options as Record<string, string> | null | undefined
   return Boolean(options && Object.keys(options).length > 0)
+}
+
+const shouldUseBlockMath = (value: string): boolean => {
+  return /\\\[|\\begin\{aligned\}|\\\\/.test(value)
 }
 
 const previewHtml = computed(() => {
@@ -150,7 +157,12 @@ onMounted(() => {
           :src="imageSrc"
           alt=""
         />
-        <p class="services-task__text" v-html="task.task ? renderMathText(task.task, { wizu5: useWizu5 }) : ''"></p>
+        <p class="services-task__text">
+          <MathJaxText
+            :content="normalizeLatexText(task.task || '')"
+            :block="shouldUseBlockMath(normalizeLatexText(task.task || ''))"
+          />
+        </p>
         <div v-if="taskHasOptions(task)" class="services-task__options">
           <label
             v-for="(optionValue, optionKey) in task.options"
@@ -166,9 +178,9 @@ onMounted(() => {
               :disabled="(task.id && props.lockedTaskIds[task.id]) || props.isSubmitting"
               @change="handleSelectAnswer(task.id, optionKey)"
             />
-            <span>
+            <span class="services-task__option-content">
               <span>{{ optionKey }}:</span>
-              <span v-html="renderMathText(optionValue, { wizu5: useWizu5 })"></span>
+              <MathJaxText :content="normalizeOptionValue(optionValue)" />
             </span>
           </label>
         </div>
@@ -222,7 +234,7 @@ onMounted(() => {
         </div>
         <p v-if="task.hint" class="services-task__hint">
           <span class="services-task__hint-label">Указание:</span>
-          <span v-html="renderMathText(task.hint, { wizu5: useWizu5 })"></span>
+          <MathJaxText :content="normalizeLatexText(task.hint)" />
         </p>
       </article>
     </div>

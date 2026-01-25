@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { renderMathText } from '../../utils/mathRenderer'
+import MathJaxText from '../MathJaxText.vue'
+import { normalizeLatexText, normalizeOptionValue } from '../../utils/latexNormalize'
 
 const props = defineProps<{
   result: {
@@ -25,7 +25,6 @@ const handleRetry = (): void => {
   emit('retry')
 }
 
-const useWizu5 = computed(() => props.result.mathDialect === 'wizu5')
 </script>
 
 <template>
@@ -34,20 +33,44 @@ const useWizu5 = computed(() => props.result.mathDialect === 'wizu5')
       {{ props.result.result ? 'ВЯРНО' : 'ГРЕШНО' }}
     </div>
     <div class="services-result__details">
-      <p><strong>Задача:</strong> <span v-html="renderMathText(props.result.task || '', { wizu5: useWizu5 })"></span></p>
-      <p><strong>Избран отговор:</strong> {{ props.result.answer }}</p>
-      <p><strong>Верен отговор:</strong> {{ props.correctAnswer }}</p>
+      <div class="services-result__row">
+        <strong class="services-result__label">Задача:</strong>
+        <span class="services-result__value">
+          <MathJaxText
+            :content="normalizeLatexText(props.result.task || '')"
+            :block="true"
+          />
+        </span>
+      </div>
+      <div class="services-result__row">
+        <strong class="services-result__label">Избран отговор:</strong>
+        <span class="services-result__value">{{ props.result.answer }}</span>
+      </div>
+      <div class="services-result__row">
+        <strong class="services-result__label">Верен отговор:</strong>
+        <span class="services-result__value">{{ props.correctAnswer }}</span>
+      </div>
       <div v-if="props.result.options" class="services-result__options">
         <strong>Възможни отговори:</strong>
         <ul>
           <li v-for="(value, key) in props.result.options" :key="key">
             <span>{{ key }}:</span>
-            <span v-html="renderMathText(value, { wizu5: useWizu5 })"></span>
+            <MathJaxText :content="normalizeOptionValue(value)" />
           </li>
         </ul>
       </div>
-      <p v-if="props.result.hint"><strong>Помощ:</strong> <span v-html="renderMathText(props.result.hint, { wizu5: useWizu5 })"></span></p>
-      <p v-if="props.result.solution"><strong>Решение:</strong> <span v-html="renderMathText(props.result.solution, { wizu5: useWizu5 })"></span></p>
+      <div v-if="props.result.hint" class="services-result__row">
+        <strong class="services-result__label">Помощ:</strong>
+        <span class="services-result__value">
+          <MathJaxText :content="normalizeLatexText(props.result.hint)" />
+        </span>
+      </div>
+      <div v-if="props.result.solution" class="services-result__row">
+        <strong class="services-result__label">Решение:</strong>
+        <span class="services-result__value">
+          <MathJaxText :content="normalizeLatexText(props.result.solution)" :block="true" />
+        </span>
+      </div>
       <img
         v-for="(imageSrc, index) in props.solutionImages || []"
         :key="`solution-image-${index}`"

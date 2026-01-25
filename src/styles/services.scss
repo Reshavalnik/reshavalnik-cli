@@ -288,6 +288,10 @@
 .services-task__text {
   margin: 0 0 10px;
   font-size: 14px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: left;
 }
 
 .services-task__image {
@@ -412,6 +416,13 @@
   color: #1f1f1f;
 }
 
+.services-task__option-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: left;
+}
+
 .services-task__option.is-selected {
   background: #1b1b1b;
   color: #fff;
@@ -429,6 +440,10 @@
   background: #f1f1ec;
   font-size: 12px;
   color: #333;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: left;
 }
 
 .services-task__hint-label {
@@ -488,8 +503,29 @@
   gap: 8px;
 }
 
-.services-result__details p {
+.services-result__row {
   margin: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.services-result__label {
+  flex: 0 0 auto;
+}
+
+.services-result__value {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: left;
+}
+
+.mathjax-text {
+  white-space: pre-wrap;
+  line-height: 1.5;
 }
 
 .services-result__options ul {
